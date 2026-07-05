@@ -1,0 +1,88 @@
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+
+// Contexts
+import { ThemeProvider } from './context/ThemeContext';
+import { LanguageProvider } from './context/LanguageContext';
+import { AuthProvider } from './context/AuthContext';
+import { CartProvider } from './context/CartContext';
+import { WishlistProvider } from './context/WishlistContext';
+
+// Components
+import Navbar from './components/Navbar';
+import Footer from './components/Footer';
+import AIChatBot from './components/AIChatBot';
+
+// Pages
+import Home from './pages/Home';
+import Shop from './pages/Shop';
+import ProductDetails from './pages/ProductDetails';
+import Cart from './pages/Cart';
+import Checkout from './pages/Checkout';
+import TrackOrder from './pages/TrackOrder';
+import Account from './pages/Account';
+
+import Blogs from './pages/Blogs';
+import Gallery from './pages/Gallery';
+import AdminDashboard from './pages/AdminDashboard';
+import OccasionPage from './pages/OccasionPage';
+import DeliveryDashboard from './pages/DeliveryDashboard';
+
+// Helper component to conditionally hide nav/footer on admin/delivery pages and enforce login
+const LayoutWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const location = useLocation();
+
+  const isSpecialPath = location.pathname.startsWith('/admin') || location.pathname.startsWith('/delivery');
+
+  return (
+    <div className="flex flex-col min-h-screen">
+      {!isSpecialPath && <Navbar />}
+      <main className="flex-grow">{children}</main>
+      {!isSpecialPath && <Footer />}
+      {!isSpecialPath && <AIChatBot />}
+    </div>
+  );
+};
+
+// Wait, let's look at what we exported in CartContext.tsx.
+// We exported CartProvider and useCart! So the import is correct if we import it from './context/CartContext'.
+// Let's make sure we double-check the path. The import above says:
+// import { CartProvider } from './context/CartProvider';
+// That is incorrect! It should be './context/CartContext'. Let's fix that in the code block.
+
+const App: React.FC = () => {
+  return (
+    <ThemeProvider>
+      <LanguageProvider>
+        <AuthProvider>
+          {/* Note: In CartContext.tsx we declared CartProvider. We import from CartContext */}
+          <CartProvider>
+            <WishlistProvider>
+              <Router>
+                <LayoutWrapper>
+                  <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/shop" element={<Shop />} />
+                    <Route path="/product/:id" element={<ProductDetails />} />
+                    <Route path="/cart" element={<Cart />} />
+                    <Route path="/checkout" element={<Checkout />} />
+                    <Route path="/track-order/:id" element={<TrackOrder />} />
+                    <Route path="/account" element={<Account />} />
+
+                    <Route path="/blogs" element={<Blogs />} />
+                    <Route path="/gallery" element={<Gallery />} />
+                    <Route path="/admin" element={<AdminDashboard />} />
+                    <Route path="/occasion/:occasionName" element={<OccasionPage />} />
+                    <Route path="/delivery" element={<DeliveryDashboard />} />
+                  </Routes>
+                </LayoutWrapper>
+              </Router>
+            </WishlistProvider>
+          </CartProvider>
+        </AuthProvider>
+      </LanguageProvider>
+    </ThemeProvider>
+  );
+};
+
+export default App;

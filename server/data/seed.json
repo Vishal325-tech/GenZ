@@ -1,0 +1,231 @@
+{
+  "categories": [
+    {
+      "name": "Luxury Gift Hampers",
+      "image": "/images/cat_luxury.jpg",
+      "subCategories": ["Premium Hampers", "Gourmet Trays", "Celebration Baskets"]
+    },
+    {
+      "name": "Anniversary",
+      "image": "/images/cat_anniversary.jpg",
+      "subCategories": ["Silver Jubilee", "Golden Jubilee", "Milestones"]
+    },
+    {
+      "name": "Birthday",
+      "image": "/images/cat_birthday.jpg",
+      "subCategories": ["Kids", "Adults", "Surprise Combos"]
+    },
+    {
+      "name": "Flowers",
+      "image": "/images/cat_flowers.jpg",
+      "subCategories": ["Roses", "Lilies", "Orchids", "Vase Arrangements"]
+    },
+    {
+      "name": "Chocolate Hampers",
+      "image": "/images/cat_chocolates.jpg",
+      "subCategories": ["Artisanal Dark", "Imported Selection", "Truffle Boxes"]
+    },
+    {
+      "name": "Teddy Bears",
+      "image": "/images/cat_teddies.jpg",
+      "subCategories": ["Giant Bears", "Plush Combos", "Baby Friendly"]
+    },
+    {
+      "name": "Customized Gifts",
+      "image": "/images/cat_customized.jpg",
+      "subCategories": ["Photo Frames", "Engraved Items", "Mugs & Pillow Combos"]
+    },
+    {
+      "name": "Baby Gifts",
+      "image": "/images/cat_baby.jpg",
+      "subCategories": ["Baby Shower", "Newborn Essentials", "Toys"]
+    }
+  ],
+  "products": [
+    {
+      "name": "Royal Crimson Luxury Gift Hamper",
+      "price": 4999,
+      "offerPrice": 3999,
+      "description": "An ultra-premium gold-embossed hamper featuring a plush red teddy bear, artisanal dark chocolates, luxury room spray, a handwritten card, and fresh red roses wrapped in gold mesh ribbon.",
+      "stock": 25,
+      "category": "Luxury Gift Hampers",
+      "subCategory": "Premium Hampers",
+      "images": [
+        "/images/hamper_crimson_1.jpg",
+        "/images/hamper_crimson_2.jpg"
+      ],
+      "videos": [],
+      "tags": ["featured", "best_seller"],
+      "ratingAverage": 5.0,
+      "reviews": [
+        {
+          "userName": "Aishwarya R.",
+          "rating": 5,
+          "comment": "Absolutely breathtaking presentation. My parents loved the gold ribbon and details!",
+          "approved": true
+        }
+      ]
+    },
+    {
+      "name": "Golden Jubilee Anniversary Box",
+      "price": 3499,
+      "offerPrice": 2999,
+      "description": "Elegant white box wrapped in shimmering gold satin ribbon, containing premium single-origin coffee beans, customized gold-rimmed mugs, rich Belgian dark chocolate truffles, and a mini rose bouquet.",
+      "stock": 15,
+      "category": "Anniversary",
+      "subCategory": "Golden Jubilee",
+      "images": [
+        "/images/hamper_anniversary.jpg"
+      ],
+      "videos": [],
+      "tags": ["trending"],
+      "ratingAverage": 4.8,
+      "reviews": [
+        {
+          "userName": "Sameer K.",
+          "rating": 4.8,
+          "comment": "The presentation is top notch! High quality coffee and beautiful mugs.",
+          "approved": true
+        }
+      ]
+    },
+    {
+      "name": "Sweet Grace Teddy & Flowers Bouquet",
+      "price": 1999,
+      "offerPrice": 1599,
+      "description": "A fluffy, premium-grade white teddy bear holding a velvet heart, paired with a gorgeous bunch of fresh lilies and red carnations arranged in designer parchment wrap.",
+      "stock": 50,
+      "category": "Teddy Bears",
+      "subCategory": "Plush Combos",
+      "images": [
+        "/images/teddy_flowers.jpg"
+      ],
+      "videos": [],
+      "tags": ["featured"],
+      "ratingAverage": 4.5,
+      "reviews": []
+    },
+    {
+      "name": "Artisanal Chocolate Symphony Tray",
+      "price": 1499,
+      "offerPrice": 1249,
+      "description": "A handcrafted dark wood tray filled with gourmet dark chocolate bars, almond dragées, roasted hazelnuts, and double-chocolate fudge cookies, finished with a classic golden ribbon.",
+      "stock": 40,
+      "category": "Chocolate Hampers",
+      "subCategory": "Artisanal Dark",
+      "images": [
+        "/images/choc_symphony.jpg"
+      ],
+      "videos": [],
+      "tags": ["best_seller"],
+      "ratingAverage": 4.7,
+      "reviews": []
+    },
+    {
+      "name": "Enchanted Red Rose Bouquet",
+      "price": 1199,
+      "offerPrice": 999,
+      "description": "Twelve luxury long-stemmed red roses styled carefully in a premium matte ivory wrap and bound with an elegant gold-embossed ribbon.",
+      "stock": 30,
+      "category": "Flowers",
+      "subCategory": "Roses",
+      "images": [
+        "/images/flowers_roses.jpg"
+      ],
+      "videos": [],
+      "tags": ["trending"],
+      "ratingAverage": 4.9,
+      "reviews": []
+    },
+    {
+      "name": "Elysian Garden Ceramic Vase",
+      "price": 2499,
+      "offerPrice": 1999,
+      "description": "A striking arrangement of white orchids, golden-tinted palm leaves, and ivory hydrangeas placed inside a heavy geometric ceramic vase. Ideal for upscale housewarmings and congrats.",
+      "stock": 12,
+      "category": "Flowers",
+      "subCategory": "Vase Arrangements",
+      "images": [
+        "/images/vase_flowers.jpg"
+      ],
+      "videos": [],
+      "tags": ["featured"],
+      "ratingAverage": 4.6,
+      "reviews": []
+    },
+    {
+      "name": "Custom memoirs Gold-Rimmed Photo Frame",
+      "price": 899,
+      "offerPrice": 749,
+      "description": "A sleek timber photo frame with a customized gold nameplate and borders. Fits standard photo cards. Comes gift wrapped with our signature black and gold style.",
+      "stock": 100,
+      "category": "Customized Gifts",
+      "subCategory": "Photo Frames",
+      "images": [
+        "/images/photo_frame.jpg"
+      ],
+      "videos": [],
+      "tags": [],
+      "ratingAverage": 4.5,
+      "reviews": []
+    },
+    {
+      "name": "Premium Baby Bunny Basket Set",
+      "price": 2799,
+      "offerPrice": 2399,
+      "description": "Soft organic cotton baby blankets, a baby-safe plush bunny rattle, and organic baby skincare products packed in a premium reusable white woven basket with a soft pink/blue ribbon.",
+      "stock": 20,
+      "category": "Baby Gifts",
+      "subCategory": "Newborn Essentials",
+      "images": [
+        "/images/baby_hamper.jpg"
+      ],
+      "videos": [],
+      "tags": [],
+      "ratingAverage": 4.7,
+      "reviews": []
+    }
+  ],
+  "coupons": [
+    {
+      "code": "LUXURY15",
+      "discountPercent": 15,
+      "active": true
+    },
+    {
+      "code": "WELCOME10",
+      "discountPercent": 10,
+      "active": true
+    },
+    {
+      "code": "FESTIVAL50",
+      "discountPercent": 50,
+      "active": true
+    }
+  ],
+  "banners": {
+    "homeBanner": {
+      "title": "Deliver Happiness with Beautiful Gifts",
+      "subtitle": "Send curated luxury gifts anywhere for birthdays, anniversaries, weddings, and every special occasion.",
+      "image": "/images/hero_banner.jpg",
+      "buttonText": "Shop Now"
+    },
+    "festivalBanner": {
+      "title": "Sparkle and Joy: Festive Season Offers",
+      "subtitle": "Get flat 20% off on all luxury festival hampers. Limited stock!",
+      "image": "/images/festival_banner.jpg",
+      "buttonText": "Explore Festival Collection"
+    },
+    "offersBanner": {
+      "title": "Exclusive Flash Sale",
+      "subtitle": "Save extra with coupon code LUXURY15 on checkout.",
+      "image": "/images/offers_banner.jpg",
+      "buttonText": "View Offers"
+    },
+    "carouselImages": [
+      "/images/carousel_1.jpg",
+      "/images/carousel_2.jpg",
+      "/images/carousel_3.jpg"
+    ]
+  }
+}
