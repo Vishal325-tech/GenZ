@@ -10,6 +10,7 @@ import { WishlistProvider } from './context/WishlistContext';
 
 // Components
 import Navbar from './components/Navbar';
+import Sidebar from './components/Sidebar';
 import Footer from './components/Footer';
 import AIChatBot from './components/AIChatBot';
 
@@ -35,9 +36,14 @@ const LayoutWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   const isSpecialPath = location.pathname.startsWith('/admin') || location.pathname.startsWith('/delivery');
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-luxury-cream dark:bg-luxury-black-dark">
       {!isSpecialPath && <Navbar />}
-      <main className="flex-grow">{children}</main>
+      <div className="flex flex-grow relative max-w-[100vw]">
+        {!isSpecialPath && <Sidebar />}
+        <main className="flex-grow w-full min-w-0 relative flex flex-col">
+          {children}
+        </main>
+      </div>
       {!isSpecialPath && <Footer />}
       {!isSpecialPath && <AIChatBot />}
     </div>

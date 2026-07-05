@@ -147,23 +147,19 @@ const Shop: React.FC = () => {
             {/* Occasion Filter */}
             <div>
               <label className="text-[11px] font-bold uppercase tracking-wider text-luxury-gold block mb-2">Occasion</label>
-              <div className="flex flex-col gap-1 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
-                <button
-                  onClick={() => setSelectedOccasion('')}
-                  className={`text-left px-3 py-2 rounded-lg text-xs transition-colors ${selectedOccasion === '' ? 'bg-luxury-gold text-white font-bold' : 'bg-neutral-50 dark:bg-neutral-800 text-luxury-black dark:text-white hover:bg-luxury-gold/10 dark:hover:bg-luxury-gold/20'}`}
-                >
-                  All Occasions
-                </button>
-                {['Birthday', 'Anniversary', 'Valentine\'s Day', 'Wedding', 'Congratulations', 'House Warming', 'Baby Shower', 'Graduation', 'Festivals', 'Christmas', 'Father\'s Day', 'Mother\'s Day'].map(occ => (
-                  <button
-                    key={occ}
-                    onClick={() => setSelectedOccasion(occ)}
-                    className={`text-left px-3 py-2 rounded-lg text-xs transition-colors ${selectedOccasion === occ ? 'bg-luxury-gold text-white font-bold' : 'bg-neutral-50 dark:bg-neutral-800 text-luxury-black dark:text-white hover:bg-luxury-gold/10 dark:hover:bg-luxury-gold/20'}`}
-                  >
-                    {occ}
-                  </button>
-                ))}
-              </div>
+              <select
+                value={selectedOccasion}
+                onChange={(e) => setSelectedOccasion(e.target.value)}
+                className="w-full px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-xs text-luxury-black dark:text-white focus:outline-none"
+              >
+                <option value="">All Occasions</option>
+                <option value="Birthday">Birthday</option>
+                <option value="Anniversary">Anniversary</option>
+                <option value="Valentine's Day">Valentine's Day</option>
+                <option value="Wedding">Wedding</option>
+                <option value="Congratulations">Congratulations</option>
+                <option value="House Warming">House Warming</option>
+              </select>
             </div>
 
             {/* Price Filter */}
