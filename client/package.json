@@ -1,6 +1,7 @@
 {
   "name": "gajanana-client",
   "version": "1.0.0",
+  "homepage": "https://Vishal325-tech.github.io/GenZ",
   "type": "module",
   "scripts": {
     "dev": "vite",
