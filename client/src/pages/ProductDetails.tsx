@@ -440,7 +440,7 @@ const ProductDetails: React.FC = () => {
                   <div className="flex items-start bg-luxury-cream dark:bg-luxury-black p-3 rounded-lg border border-luxury-gold/10 ml-4 space-x-2">
                     <CornerDownRight className="h-4 w-4 text-luxury-gold shrink-0 mt-0.5" />
                     <div>
-                      <span className="text-[10px] font-bold text-luxury-red block">Gift Movers Support</span>
+                      <span className="text-[10px] font-bold text-luxury-red block">Gajanana Support</span>
                       <p className="text-xs text-luxury-black/60 dark:text-white/60 leading-relaxed mt-0.5">
                         {rev.reply}
                       </p>

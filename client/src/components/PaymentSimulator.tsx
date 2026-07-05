@@ -80,7 +80,7 @@ const PaymentSimulator: React.FC<PaymentSimulatorProps> = ({ amount, onPaymentSu
                     <>
                       <div className="flex justify-between items-start">
                         <CreditCard className="h-8 w-8 text-luxury-gold" />
-                        <span className="font-serif text-xs font-bold text-luxury-gold">GIFT MOVERS ELITE</span>
+                        <span className="font-serif text-xs font-bold text-luxury-gold">GAJANANA ELITE</span>
                       </div>
                       <div className="text-base tracking-widest font-mono text-luxury-cream-light mt-4">
                         {cardNumber.padEnd(16, '•').replace(/(.{4})/g, '$1 ')}

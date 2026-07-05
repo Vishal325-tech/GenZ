@@ -21,7 +21,7 @@ const AIChatBot: React.FC = () => {
     {
       id: 'welcome',
       sender: 'bot',
-      text: "Hello! I am your Gift Movers Personal Shopping Assistant. 🎁\n\nTell me: who are you shopping for, what is the occasion (e.g., Anniversary, Birthday), or your budget? I will find the perfect luxury match!"
+      text: "Hello! I am your Gajanana Personal Shopping Assistant. 🎁\n\nTell me: who are you shopping for, what is the occasion (e.g., Anniversary, Birthday), or your budget? I will find the perfect luxury match!"
     }
   ]);
   const [input, setInput] = useState('');

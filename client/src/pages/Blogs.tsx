@@ -6,7 +6,7 @@ const BLOGS = [
     id: 1,
     title: 'The Art of Silk Ribbon Wrapping',
     summary: 'Discover how hand-tied double-satin ribbons and custom gold wax stamps elevate a simple hamper into a luxury experience.',
-    content: 'Luxury is in the details. At Gift Movers, we believe that wrapping is an art form. When you send a gift box wrapped in silk mesh or rich velvet, the opening experience is just as memorable as the contents itself...',
+    content: 'Luxury is in the details. At Gajanana, we believe that wrapping is an art form. When you send a gift box wrapped in silk mesh or rich velvet, the opening experience is just as memorable as the contents itself...',
     author: 'Elena Rostova',
     date: 'June 20, 2026',
     image: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=500'

@@ -66,7 +66,7 @@ async function startServer() {
   await initDatabase();
 
   app.listen(PORT, () => {
-    console.log(`🚀 Gift Movers Server floating on port ${PORT}`);
+    console.log(`🚀 Gajanana Server floating on port ${PORT}`);
   });
 }
 

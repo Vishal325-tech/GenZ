@@ -53,14 +53,14 @@ router.post('/chat', async (req, res) => {
 
     let replyText = '';
     if (topPick) {
-      replyText = `Hello! I am your Gift Movers AI Assistant. Based on your details, I highly recommend the **${topPick.name}** (₹${topPick.price.toLocaleString()}). ${topPick.description.substring(0, 120)}... It is rated highly (${topPick.ratingAverage}⭐) by our customers.`;
+      replyText = `Hello! I am your Gajanana AI Assistant. Based on your details, I highly recommend the **${topPick.name}** (₹${topPick.price.toLocaleString()}). ${topPick.description.substring(0, 120)}... It is rated highly (${topPick.ratingAverage}⭐) by our customers.`;
       
       if (alternates.length > 0) {
         replyText += `\n\nOther luxury options within your preference:\n` + 
           alternates.map(a => `- **${a.name}** (₹${a.price.toLocaleString()})`).join('\n');
       }
     } else {
-      replyText = "Hello! I am your Gift Movers AI Assistant. I couldn't find any direct matches in that price range. Try searching for 'hampers' or 'chocolates' around ₹1,500!";
+      replyText = "Hello! I am your Gajanana AI Assistant. I couldn't find any direct matches in that price range. Try searching for 'hampers' or 'chocolates' around ₹1,500!";
     }
 
     res.json({
