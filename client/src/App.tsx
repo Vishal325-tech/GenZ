@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 
 // Contexts
 import { ThemeProvider } from './context/ThemeContext';
@@ -80,6 +80,10 @@ const App: React.FC = () => {
                     <Route path="/admin" element={<AdminDashboard />} />
                     <Route path="/occasion/:occasionName" element={<OccasionPage />} />
                     <Route path="/delivery" element={<DeliveryDashboard />} />
+                    
+                    {/* Redirect login and all unknown routes to home */}
+                    <Route path="/login" element={<Navigate to="/" replace />} />
+                    <Route path="*" element={<Navigate to="/" replace />} />
                   </Routes>
                 </LayoutWrapper>
               </Router>

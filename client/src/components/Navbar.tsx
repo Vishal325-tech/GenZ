@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, ShoppingCart, Heart, User, Sun, Moon, Globe, Mic, Menu, X, Gift } from 'lucide-react';
+import { Search, ShoppingCart, Heart, User, Sun, Moon, Globe, Mic, Menu, X, Zap } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
@@ -73,14 +73,14 @@ const Navbar: React.FC = () => {
           
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2 group">
-            <Gift className="h-8 w-8 text-luxury-red hover:text-luxury-gold transition-colors duration-300" />
+            <Zap className="h-8 w-8 text-[#8B0000] hover:text-luxury-gold transition-colors duration-300" />
             <div className="flex flex-col">
-              <span className="font-serif text-lg md:text-xl font-bold tracking-wider font-extrabold shimmer-red transition-all duration-300">
-                GAJANANA ROYAL HAMPERS
+              <span className="font-sans text-lg md:text-xl font-black tracking-wider shimmer-red transition-all duration-300 drop-shadow-sm">
+                GENZ ROYAL HAMPERS
               </span>
-              <span className="text-[10px] uppercase tracking-widest text-luxury-red/80 dark:text-luxury-red/70 font-semibold flex items-center gap-1.5">
+              <span className="text-[10px] uppercase tracking-widest text-luxury-red/80 dark:text-luxury-red/70 font-semibold flex items-center gap-1.5 mt-0.5">
                 <span>Royal Celebration & Hampers</span>
-                <span className="bg-luxury-red text-white text-[8px] px-1.5 py-0.5 rounded-full font-bold border border-luxury-red-dark/40 shadow-sm">CEO Vishal S H</span>
+                <span className="bg-[#8B0000] text-white text-[8px] px-1.5 py-0.5 rounded-full font-bold border border-luxury-red-dark/40 shadow-sm">CEO Vishal S H</span>
               </span>
             </div>
           </Link>
@@ -213,7 +213,7 @@ const Navbar: React.FC = () => {
 
             {/* User Account */}
             <Link
-              to={user ? "/account" : "/login"}
+              to={user ? "/account" : "/"}
               className="p-2 rounded-full hover:bg-luxury-cream-dark dark:hover:bg-luxury-black-soft text-luxury-gold"
               title="Account"
             >
@@ -296,8 +296,8 @@ const Navbar: React.FC = () => {
                 Log Out
               </button>
             ) : (
-              <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 text-base font-medium text-luxury-red hover:bg-luxury-cream-dark dark:hover:bg-luxury-black-soft rounded">
-                Log In
+              <Link to="/" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 text-base font-medium text-luxury-red hover:bg-luxury-cream-dark dark:hover:bg-luxury-black-soft rounded">
+                Home
               </Link>
             )}
           </div>

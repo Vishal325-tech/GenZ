@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Heart, Eye, ShoppingBag, Check } from 'lucide-react';
+import { Heart, Eye, MessageCircle, Mail } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import QuickViewModal from './QuickViewModal';
@@ -146,32 +146,26 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             {product.description}
           </p>
 
-          {/* Pricing details */}
-          <div className="flex items-baseline space-x-2 mt-auto">
-            <span className="text-sm font-bold text-luxury-red dark:text-luxury-gold">
-              ₹{displayPrice.toLocaleString()}
-            </span>
-            {product.offerPrice && (
-              <span className="text-[10px] text-luxury-black/40 dark:text-white/40 line-through">
-                ₹{product.price.toLocaleString()}
-              </span>
-            )}
-          </div>
-
-          {/* Action buttons */}
-          <div className="mt-4 pt-3 border-t border-luxury-gold/10 grid grid-cols-2 gap-2">
-            <button
-              onClick={handleAddToCart}
-              className="py-1.5 border border-luxury-gold/30 hover:border-luxury-gold text-luxury-black dark:text-white hover:bg-luxury-gold/10 rounded-md text-[10px] font-bold uppercase tracking-wider transition-all flex items-center justify-center space-x-1"
+          {/* Action buttons - Enquiry Mode */}
+          <div className="mt-auto pt-4 border-t border-luxury-gold/10 grid grid-cols-2 gap-2">
+            <a
+              href={`https://wa.me/9108531238?text=${encodeURIComponent(`Hi, I am interested in the ${product.name} from GENZ Royal Hampers.`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="py-1.5 bg-green-500 hover:bg-green-600 text-white rounded-md text-[9px] sm:text-[10px] font-bold uppercase tracking-wider shadow-sm transition-all flex items-center justify-center space-x-1"
             >
-              {added ? 'Added!' : 'Add to Cart'}
-            </button>
-            <button
-              onClick={handleBuyNow}
-              className="py-1.5 bg-luxury-red hover:bg-luxury-red-dark text-white rounded-md text-[10px] font-bold uppercase tracking-wider shadow-sm hover:shadow-red-glow transition-all"
+              <MessageCircle className="h-3.5 w-3.5" />
+              <span>WhatsApp</span>
+            </a>
+            <a
+              href={`mailto:contact@genzroyalhampers.com?subject=Enquiry for ${encodeURIComponent(product.name)}`}
+              onClick={(e) => e.stopPropagation()}
+              className="py-1.5 bg-luxury-red hover:bg-luxury-red-dark text-white rounded-md text-[9px] sm:text-[10px] font-bold uppercase tracking-wider shadow-sm hover:shadow-red-glow transition-all flex items-center justify-center space-x-1"
             >
-              Buy Now
-            </button>
+              <Mail className="h-3.5 w-3.5" />
+              <span>Email Us</span>
+            </a>
           </div>
 
         </div>

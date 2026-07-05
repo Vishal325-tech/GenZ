@@ -162,46 +162,6 @@ const Shop: React.FC = () => {
               </select>
             </div>
 
-            {/* Price Filter */}
-            <div>
-              <label className="text-[11px] font-bold uppercase tracking-wider text-luxury-gold block mb-2">Budget (Price)</label>
-              <div className="flex flex-col space-y-1.5 text-xs text-neutral-600 dark:text-neutral-400">
-                <label className="flex items-center space-x-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="price"
-                    value="under_1500"
-                    checked={priceRange === 'under_1500'}
-                    onChange={() => setPriceRange('under_1500')}
-                    className="accent-luxury-red"
-                  />
-                  <span>Under ₹1,500</span>
-                </label>
-                <label className="flex items-center space-x-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="price"
-                    value="1500_3000"
-                    checked={priceRange === '1500_3000'}
-                    onChange={() => setPriceRange('1500_3000')}
-                    className="accent-luxury-red"
-                  />
-                  <span>₹1,500 - ₹3,000</span>
-                </label>
-                <label className="flex items-center space-x-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="price"
-                    value="above_3000"
-                    checked={priceRange === 'above_3000'}
-                    onChange={() => setPriceRange('above_3000')}
-                    className="accent-luxury-red"
-                  />
-                  <span>Above ₹3,000</span>
-                </label>
-              </div>
-            </div>
-
             {/* Recipient tags */}
             <div>
               <label className="text-[11px] font-bold uppercase tracking-wider text-luxury-gold block mb-2">Signature Badges</label>
@@ -229,8 +189,6 @@ const Shop: React.FC = () => {
                 className="w-full px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-xs text-luxury-black dark:text-white focus:outline-none"
               >
                 <option value="newest">Newest Additions</option>
-                <option value="price_asc">Price: Low to High</option>
-                <option value="price_desc">Price: High to Low</option>
                 <option value="popular">Customer Popularity</option>
               </select>
             </div>

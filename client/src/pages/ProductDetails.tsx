@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Calendar, Clock, ShoppingCart, Heart, Video, Image, Check, Star, CornerDownRight } from 'lucide-react';
+import { Calendar, Clock, ShoppingCart, Heart, Video, Image, Check, Star, CornerDownRight, MessageCircle, Mail } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import CustomCardDesigner from '../components/CustomCardDesigner';
@@ -351,47 +351,25 @@ const ProductDetails: React.FC = () => {
 
           </div>
 
-          {/* Cart Quantity + Purchase Triggers */}
+          {/* Enquiry Actions */}
           <div className="space-y-4 pt-6 border-t border-luxury-gold/15">
-            <div className="flex items-center space-x-4">
-              <span className="text-xs font-bold text-luxury-black/70 dark:text-white/70">Quantity:</span>
-              <div className="flex items-center border border-neutral-300 dark:border-neutral-700 rounded-md">
-                <button
-                  onClick={() => setQuantity(q => Math.max(1, q - 1))}
-                  className="px-3 py-1.5 text-sm font-semibold hover:bg-neutral-100 dark:hover:bg-neutral-800 text-luxury-black dark:text-white"
-                >
-                  -
-                </button>
-                <span className="px-4 text-xs font-semibold text-luxury-black dark:text-white">{quantity}</span>
-                <button
-                  onClick={() => setQuantity(q => Math.min(product.stock, q + 1))}
-                  className="px-3 py-1.5 text-sm font-semibold hover:bg-neutral-100 dark:hover:bg-neutral-800 text-luxury-black dark:text-white"
-                >
-                  +
-                </button>
-              </div>
-            </div>
-
             <div className="grid grid-cols-2 gap-4">
-              <button
-                onClick={handleAddToCart}
-                disabled={product.stock === 0}
-                className={`flex items-center justify-center space-x-2 py-3 rounded-lg text-xs uppercase font-bold tracking-widest transition-all ${
-                  added 
-                    ? 'bg-green-600 text-white shadow-md' 
-                    : 'bg-luxury-gold text-luxury-black hover:bg-luxury-gold-hover border border-luxury-gold shadow-md'
-                } disabled:opacity-50 disabled:pointer-events-none`}
+              <a
+                href={`https://wa.me/9108531238?text=${encodeURIComponent(`Hi, I am interested in the ${product.name} from GENZ Royal Hampers.`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center space-x-2 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg text-xs uppercase font-bold tracking-widest shadow-md transition-all"
               >
-                {added ? <Check className="h-4 w-4" /> : <ShoppingCart className="h-4 w-4" />}
-                <span>{added ? 'Added to List' : 'Add to Enquiry List'}</span>
-              </button>
-              <button
-                onClick={handleBuyNow}
-                disabled={product.stock === 0}
-                className="py-3 bg-luxury-red hover:bg-luxury-red-dark text-white rounded-lg text-xs uppercase font-bold tracking-widest shadow-lg hover:shadow-red-glow transition-all disabled:opacity-50 disabled:pointer-events-none"
+                <MessageCircle className="h-4 w-4" />
+                <span>WhatsApp Enquiry</span>
+              </a>
+              <a
+                href={`mailto:contact@genzroyalhampers.com?subject=Enquiry for ${encodeURIComponent(product.name)}`}
+                className="flex items-center justify-center space-x-2 py-3 bg-luxury-red hover:bg-luxury-red-dark text-white rounded-lg text-xs uppercase font-bold tracking-widest shadow-lg hover:shadow-red-glow transition-all"
               >
-                Enquire Now
-              </button>
+                <Mail className="h-4 w-4" />
+                <span>Email Enquiry</span>
+              </a>
             </div>
           </div>
 
@@ -440,7 +418,7 @@ const ProductDetails: React.FC = () => {
                   <div className="flex items-start bg-luxury-cream dark:bg-luxury-black p-3 rounded-lg border border-luxury-gold/10 ml-4 space-x-2">
                     <CornerDownRight className="h-4 w-4 text-luxury-gold shrink-0 mt-0.5" />
                     <div>
-                      <span className="text-[10px] font-bold text-luxury-red block">Gajanana Support</span>
+                      <span className="text-[10px] font-bold text-luxury-red block">GENZ Support</span>
                       <p className="text-xs text-luxury-black/60 dark:text-white/60 leading-relaxed mt-0.5">
                         {rev.reply}
                       </p>

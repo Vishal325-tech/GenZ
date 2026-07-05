@@ -115,7 +115,7 @@ const OccasionPage: React.FC = () => {
   const occasion = OCCASION_DATA[occasionKey] || {
     title: `${occasionKey} Hampers`,
     subtitle: "Premium Curation for Special Moments",
-    desc: `Explore our custom collection of Gajanana Royal Hampers specifically designed for ${occasionKey}. Choose gift boxes, greetings, and schedules easily at checkout.`,
+    desc: `Explore our custom collection of GENZ Royal Hampers specifically designed for ${occasionKey}. Choose gift boxes, greetings, and schedules easily at checkout.`,
     bannerImg: "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=1200",
     gradient: "from-amber-500/10 via-neutral-900/5 to-transparent"
   };
@@ -184,7 +184,7 @@ const OccasionPage: React.FC = () => {
           </p>
           <div className="flex items-center space-x-2 pt-2 text-xs text-luxury-gold font-bold uppercase tracking-wider">
             <Award className="h-4.5 w-4.5" />
-            <span>Gajanana Royal Curation Seal</span>
+            <span className="shimmer-red">GENZ Royal Curation Seal</span>
           </div>
         </div>
 

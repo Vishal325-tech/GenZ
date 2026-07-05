@@ -132,7 +132,7 @@ const Home: React.FC = () => {
           
           <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full border border-luxury-gold/40 bg-luxury-gold/10 text-luxury-gold text-[10px] uppercase font-bold tracking-widest animate-pulse">
             <Sparkles className="h-3.5 w-3.5" />
-            <span>Gajanana Royal Hampers • Royal Curation</span>
+            <span>GENZ Royal Hampers • Royal Curation</span>
           </span>
 
           <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl font-extrabold text-luxury-black-dark dark:text-white leading-tight tracking-wide">

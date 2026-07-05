@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, Phone, MapPin, Clock, Facebook, Instagram, Twitter, Heart, CheckCircle } from 'lucide-react';
+import { Mail, Phone, MapPin, Clock, Facebook, Instagram, Twitter, Heart, CheckCircle, Zap } from 'lucide-react';
 
 const Footer: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -22,8 +22,9 @@ const Footer: React.FC = () => {
         {/* Brand Information */}
         <div className="space-y-4">
           <div className="flex items-center space-x-2">
-            <span className="font-serif text-xl font-bold tracking-wider text-luxury-gold">
-              GAJANANA ROYAL HAMPERS
+            <Zap className="h-6 w-6 text-[#8B0000]" />
+            <span className="font-sans text-xl font-black tracking-wider shimmer-red drop-shadow-sm">
+              GENZ ROYAL HAMPERS
             </span>
           </div>
           <p className="text-sm text-luxury-cream-dark/60 leading-relaxed">
@@ -42,11 +43,10 @@ const Footer: React.FC = () => {
             Quick Links
           </h4>
           <ul className="space-y-2 text-sm text-luxury-cream-dark/70">
+            <li><Link to="/" className="hover:text-luxury-gold transition-colors">Home</Link></li>
             <li><Link to="/shop" className="hover:text-luxury-gold transition-colors">Browse Gifts</Link></li>
             <li><Link to="/gallery" className="hover:text-luxury-gold transition-colors">Deliveries Gallery</Link></li>
             <li><Link to="/blogs" className="hover:text-luxury-gold transition-colors">Our Blog</Link></li>
-            <li><Link to="/about" className="hover:text-luxury-gold transition-colors">About Us</Link></li>
-            <li><Link to="/contact" className="hover:text-luxury-gold transition-colors">Contact Us</Link></li>
           </ul>
         </div>
 
@@ -58,19 +58,15 @@ const Footer: React.FC = () => {
           <ul className="space-y-2.5 text-sm text-luxury-cream-dark/70">
             <li className="flex items-center space-x-2">
               <Clock className="h-4 w-4 text-luxury-gold shrink-0" />
-              <span>Mon - Sat: 9:00 AM - 9:00 PM</span>
-            </li>
-            <li className="flex items-center space-x-2">
-              <Clock className="h-4 w-4 text-luxury-gold shrink-0" />
-              <span>Sunday: 10:00 AM - 6:00 PM</span>
+              <span>24/7 Support & Enquiries</span>
             </li>
             <li className="flex items-center space-x-2 pt-2">
               <Phone className="h-4 w-4 text-luxury-gold shrink-0" />
-              <span>+91 98765 43210</span>
+              <span>+91 9108531238</span>
             </li>
             <li className="flex items-center space-x-2">
               <Mail className="h-4 w-4 text-luxury-gold shrink-0" />
-              <span>support@gajananaroyalhampers.com</span>
+              <span>contact@genzroyalhampers.com</span>
             </li>
           </ul>
         </div>
@@ -84,7 +80,7 @@ const Footer: React.FC = () => {
             {/* Styled Google Maps iframe mockup */}
             <div className="absolute inset-0 bg-neutral-900 opacity-80 flex flex-col items-center justify-center p-4 text-center">
               <MapPin className="h-7 w-7 text-luxury-red mb-1.5 animate-bounce" />
-              <span className="text-xs text-white font-semibold">Gajanana Royal Hampers Hub</span>
+              <span className="text-xs text-white font-semibold">GENZ Royal Hampers Hub</span>
               <span className="text-[10px] text-luxury-cream-dark/60 mt-1">100 Luxury Palace, Gold Sector, Bangalore</span>
             </div>
             {/* Mock coordinates mapping grid background */}
@@ -120,23 +116,23 @@ const Footer: React.FC = () => {
             {subscribed && (
               <div className="flex items-center space-x-1.5 text-xs text-luxury-gold mt-2">
                 <CheckCircle className="h-3.5 w-3.5" />
-                <span>Subscription successful! Welcome to Gajanana Royal Hampers.</span>
+                <span>Subscription successful! Welcome to GENZ Royal Hampers.</span>
               </div>
             )}
           </div>
 
           {/* Legal Links */}
           <div className="flex flex-wrap gap-4 text-xs text-luxury-cream-dark/40">
-            <Link to="/privacy" className="hover:text-luxury-gold transition-colors">Privacy Policy</Link>
-            <Link to="/terms" className="hover:text-luxury-gold transition-colors">Terms & Conditions</Link>
-            <Link to="/shipping-policy" className="hover:text-luxury-gold transition-colors">Shipping Policy</Link>
-            <Link to="/refund-policy" className="hover:text-luxury-gold transition-colors">Refund Policy</Link>
+            <Link to="/" className="hover:text-luxury-gold transition-colors">Privacy Policy</Link>
+            <Link to="/" className="hover:text-luxury-gold transition-colors">Terms & Conditions</Link>
+            <Link to="/" className="hover:text-luxury-gold transition-colors">Shipping Policy</Link>
+            <Link to="/" className="hover:text-luxury-gold transition-colors">Refund Policy</Link>
           </div>
         </div>
 
         {/* Copyright */}
         <div className="text-center mt-12 text-xs text-luxury-cream-dark/30 flex flex-col sm:flex-row items-center justify-center gap-1">
-          <span>&copy; {new Date().getFullYear()} Gajanana Royal Hampers. CEO: Vishal S H. Handcrafted with</span>
+          <span>&copy; {new Date().getFullYear()} GENZ Royal Hampers. CEO: Vishal S H. Handcrafted with</span>
           <div className="flex items-center gap-1">
             <Heart className="h-3.5 w-3.5 text-luxury-red fill-luxury-red animate-pulse" />
             <span>for elite gifting.</span>
