@@ -78,7 +78,11 @@ const AIChatBot: React.FC = () => {
       ).slice(0, 3);
 
       let fallbackText = "I found some exquisite luxury gifts that might be perfect for you!";
-      if (matchedProducts.length === 0) {
+      
+      const greetings = ['hi', 'hello', 'hey', 'greetings'];
+      if (greetings.some(g => query.includes(g)) && matchedProducts.length === 0) {
+        fallbackText = "Hello there! 👋 I am your Royal Shopping Assistant. Are you looking for a birthday, anniversary, or wedding gift?";
+      } else if (matchedProducts.length === 0) {
         fallbackText = "I'm having trouble connecting to my live luxury database right now. Could you try checking our Shop page directly for the perfect gift?";
       }
 

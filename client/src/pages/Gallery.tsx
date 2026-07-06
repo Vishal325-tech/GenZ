@@ -128,28 +128,28 @@ const Gallery: React.FC = () => {
 
       {/* Video Streaming Preview Modal */}
       {previewVideo && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
-          <div className="relative w-full max-w-2xl bg-black rounded-lg overflow-hidden border border-luxury-gold/40">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm">
+          <div className="relative w-full max-w-4xl max-h-[85vh] bg-black rounded-2xl border border-luxury-gold/40 shadow-2xl flex items-center justify-center">
             <button
               onClick={() => setPreviewVideo('')}
-              className="absolute top-4 right-4 text-white hover:text-luxury-red z-10 p-1 rounded-full bg-black/40"
+              className="absolute -top-3 -right-3 md:top-4 md:right-4 text-white hover:text-luxury-red z-10 p-2.5 rounded-full bg-neutral-900 shadow-xl border border-white/20 transition-all"
             >
               ✕
             </button>
-            <video src={previewVideo} controls autoPlay className="w-full aspect-video" />
+            <video src={previewVideo} controls autoPlay className="w-full h-full max-h-[85vh] object-contain rounded-2xl" />
           </div>
         </div>
       )}
       {previewImage && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
-          <div className="relative w-full max-w-2xl bg-black rounded-lg overflow-hidden border border-luxury-gold/40">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm">
+          <div className="relative w-full max-w-4xl max-h-[85vh] bg-black rounded-2xl border border-luxury-gold/40 shadow-2xl flex items-center justify-center">
             <button
               onClick={() => setPreviewImage('')}
-              className="absolute top-4 right-4 text-white hover:text-luxury-red z-10 p-1 rounded-full bg-black/40"
+              className="absolute -top-3 -right-3 md:top-4 md:right-4 text-white hover:text-luxury-red z-10 p-2.5 rounded-full bg-neutral-900 shadow-xl border border-white/20 transition-all"
             >
               ✕
             </button>
-            <img src={previewImage} alt="Preview" className="w-full object-contain" />
+            <img src={previewImage} alt="Preview" className="w-full h-full max-h-[85vh] object-contain rounded-2xl" />
           </div>
         </div>
       )}

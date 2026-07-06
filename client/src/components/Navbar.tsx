@@ -75,12 +75,12 @@ const Navbar: React.FC = () => {
           <Link to="/" className="flex items-center space-x-2 group">
             <Zap className="h-8 w-8 text-[#8B0000] hover:text-luxury-gold transition-colors duration-300" />
             <div className="flex flex-col">
-              <span className="font-sans text-lg md:text-xl font-black tracking-wider shimmer-red transition-all duration-300 drop-shadow-sm">
+              <span className="font-sans text-base md:text-lg font-black tracking-wider shimmer-red transition-all duration-300 drop-shadow-sm">
                 GENZ ROYAL HAMPERS
               </span>
-              <span className="text-[10px] uppercase tracking-widest text-luxury-red/80 dark:text-luxury-red/70 font-semibold flex items-center gap-1.5 mt-0.5">
+              <span className="text-[9px] uppercase tracking-widest text-luxury-red/80 dark:text-luxury-red/70 font-semibold flex items-center gap-1.5 mt-0.5">
                 <span>Royal Celebration & Hampers</span>
-                <span className="bg-[#8B0000] text-white text-[8px] px-1.5 py-0.5 rounded-full font-bold border border-luxury-red-dark/40 shadow-sm">CEO Vishal S H</span>
+                <span className="bg-[#8B0000] text-white text-[7px] px-1.5 py-0.5 rounded-full font-bold border border-luxury-red-dark/40 shadow-sm">CEO Vishal S H</span>
               </span>
             </div>
           </Link>
@@ -149,12 +149,12 @@ const Navbar: React.FC = () => {
           </div>
 
           {/* Action Buttons Icons */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-3 sm:space-x-4">
             {/* Lang Dropdown */}
-            <div className="relative" ref={langRef}>
+            <div className="relative hidden sm:block" ref={langRef}>
               <button
                 onClick={() => setLangDropdownOpen(!langDropdownOpen)}
-                className="p-2 rounded-full hover:bg-luxury-cream-dark dark:hover:bg-luxury-black-soft text-luxury-gold"
+                className="p-1.5 sm:p-2 rounded-full hover:bg-luxury-cream-dark dark:hover:bg-luxury-black-soft text-luxury-gold"
                 title="Select Language"
               >
                 <Globe className="h-5 w-5" />
@@ -177,7 +177,7 @@ const Navbar: React.FC = () => {
             {/* Dark Mode toggle */}
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-full hover:bg-luxury-cream-dark dark:hover:bg-luxury-black-soft text-luxury-gold"
+              className="hidden sm:block p-1.5 sm:p-2 rounded-full hover:bg-luxury-cream-dark dark:hover:bg-luxury-black-soft text-luxury-gold"
               title="Toggle Theme"
             >
               {theme === 'light' ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
@@ -186,7 +186,7 @@ const Navbar: React.FC = () => {
             {/* Wishlist */}
             <Link
               to="/account?tab=wishlist"
-              className="p-2 rounded-full hover:bg-luxury-cream-dark dark:hover:bg-luxury-black-soft text-luxury-gold relative"
+              className="p-1.5 sm:p-2 rounded-full hover:bg-luxury-cream-dark dark:hover:bg-luxury-black-soft text-luxury-gold relative"
               title="Wishlist"
             >
               <Heart className="h-5 w-5" />
@@ -200,7 +200,7 @@ const Navbar: React.FC = () => {
             {/* Cart */}
             <Link
               to="/cart"
-              className="p-2 rounded-full hover:bg-luxury-cream-dark dark:hover:bg-luxury-black-soft text-luxury-gold relative"
+              className="p-1.5 sm:p-2 rounded-full hover:bg-luxury-cream-dark dark:hover:bg-luxury-black-soft text-luxury-gold relative"
               title="Cart"
             >
               <ShoppingCart className="h-5 w-5" />
@@ -214,7 +214,7 @@ const Navbar: React.FC = () => {
             {/* User Account */}
             <Link
               to={user ? "/account" : "/"}
-              className="p-2 rounded-full hover:bg-luxury-cream-dark dark:hover:bg-luxury-black-soft text-luxury-gold"
+              className="hidden sm:block p-1.5 sm:p-2 rounded-full hover:bg-luxury-cream-dark dark:hover:bg-luxury-black-soft text-luxury-gold"
               title="Account"
             >
               <User className="h-5 w-5" />
@@ -223,7 +223,7 @@ const Navbar: React.FC = () => {
             {/* Mobile Hamburger menu */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 rounded-full hover:bg-luxury-cream-dark dark:hover:bg-luxury-black-soft text-luxury-gold"
+              className="lg:hidden p-1.5 sm:p-2 rounded-full hover:bg-luxury-cream-dark dark:hover:bg-luxury-black-soft text-luxury-gold"
             >
               {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
@@ -288,18 +288,49 @@ const Navbar: React.FC = () => {
 
 
 
-            {user ? (
-              <button
-                onClick={() => { logout(); setMobileMenuOpen(false); }}
-                className="w-full text-left px-3 py-2 text-base font-medium text-luxury-red hover:bg-luxury-cream-dark dark:hover:bg-luxury-black-soft rounded"
-              >
-                Log Out
+            <div className="border-t border-luxury-gold/10 pt-3 my-2 sm:hidden flex flex-col space-y-2">
+              <button onClick={toggleTheme} className="flex items-center px-3 py-2 text-base font-medium rounded hover:bg-luxury-cream-dark dark:hover:bg-luxury-black-soft text-luxury-black dark:text-white">
+                {theme === 'light' ? <Moon className="h-5 w-5 mr-3" /> : <Sun className="h-5 w-5 mr-3" />}
+                {theme === 'light' ? 'Dark Mode' : 'Light Mode'}
               </button>
-            ) : (
-              <Link to="/" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 text-base font-medium text-luxury-red hover:bg-luxury-cream-dark dark:hover:bg-luxury-black-soft rounded">
-                Home
-              </Link>
-            )}
+              
+              <div className="px-3 py-2">
+                <span className="text-xs font-semibold uppercase tracking-wider text-luxury-gold block mb-2">Language</span>
+                <div className="flex gap-2">
+                  <button onClick={() => { selectLanguage('en'); setMobileMenuOpen(false); }} className={`px-3 py-1 text-xs rounded border ${language === 'en' ? 'border-luxury-gold bg-luxury-gold/10 text-luxury-gold' : 'border-luxury-gold/30 text-luxury-black dark:text-white'}`}>English</button>
+                  <button onClick={() => { selectLanguage('kn'); setMobileMenuOpen(false); }} className={`px-3 py-1 text-xs rounded border ${language === 'kn' ? 'border-luxury-gold bg-luxury-gold/10 text-luxury-gold' : 'border-luxury-gold/30 text-luxury-black dark:text-white'}`}>ಕನ್ನಡ</button>
+                  <button onClick={() => { selectLanguage('hi'); setMobileMenuOpen(false); }} className={`px-3 py-1 text-xs rounded border ${language === 'hi' ? 'border-luxury-gold bg-luxury-gold/10 text-luxury-gold' : 'border-luxury-gold/30 text-luxury-black dark:text-white'}`}>हिन्दी</button>
+                </div>
+              </div>
+
+              {user ? (
+                <button
+                  onClick={() => { logout(); setMobileMenuOpen(false); }}
+                  className="w-full text-left flex items-center px-3 py-2 text-base font-medium text-luxury-red hover:bg-luxury-cream-dark dark:hover:bg-luxury-black-soft rounded"
+                >
+                  <User className="h-5 w-5 mr-3" /> Log Out
+                </button>
+              ) : (
+                <Link to="/" onClick={() => setMobileMenuOpen(false)} className="flex items-center px-3 py-2 text-base font-medium text-luxury-red hover:bg-luxury-cream-dark dark:hover:bg-luxury-black-soft rounded">
+                  <User className="h-5 w-5 mr-3" /> Log In
+                </Link>
+              )}
+            </div>
+
+            <div className="hidden sm:block">
+              {user ? (
+                <button
+                  onClick={() => { logout(); setMobileMenuOpen(false); }}
+                  className="w-full text-left px-3 py-2 text-base font-medium text-luxury-red hover:bg-luxury-cream-dark dark:hover:bg-luxury-black-soft rounded"
+                >
+                  Log Out
+                </button>
+              ) : (
+                <Link to="/" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 text-base font-medium text-luxury-red hover:bg-luxury-cream-dark dark:hover:bg-luxury-black-soft rounded">
+                  Home
+                </Link>
+              )}
+            </div>
           </div>
         </div>
       )}

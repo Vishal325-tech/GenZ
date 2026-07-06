@@ -33,6 +33,10 @@ import DeliveryDashboard from './pages/DeliveryDashboard';
 const LayoutWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
 
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
   const isSpecialPath = location.pathname.startsWith('/admin') || location.pathname.startsWith('/delivery');
 
   return (

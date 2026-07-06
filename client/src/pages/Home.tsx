@@ -71,7 +71,7 @@ const Home: React.FC = () => {
     <div className="relative overflow-hidden min-h-screen bg-luxury-cream dark:bg-luxury-black-dark transition-colors duration-300">
       
       {/* Parallax Hero Section */}
-      <section className="relative h-[50vh] flex items-center justify-center overflow-hidden border-b border-luxury-gold/20">
+      <section className="relative min-h-[60vh] py-16 flex items-center justify-center overflow-hidden border-b border-luxury-gold/20">
         
         {/* Background - light & dark */}
         <div className="absolute inset-0 bg-gradient-to-br from-pink-100 via-rose-50 to-pink-200 dark:from-luxury-black-dark dark:via-neutral-900 dark:to-luxury-black-soft transition-colors duration-300" />
@@ -112,7 +112,7 @@ const Home: React.FC = () => {
             <span>GENZ Royal Hampers • Royal Curation</span>
           </span>
 
-          <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl font-extrabold text-luxury-black-dark dark:text-white leading-tight tracking-wide">
+          <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-extrabold text-luxury-black-dark dark:text-white leading-tight tracking-wide break-words">
             {t('subtitle')}
           </h1>
 
@@ -507,15 +507,15 @@ const Home: React.FC = () => {
 
       {/* Video Preview Modal */}
       {previewVideo && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4">
-          <div className="relative w-full max-w-lg bg-black rounded-2xl overflow-hidden border border-luxury-gold/40 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm">
+          <div className="relative w-full max-w-3xl max-h-[85vh] bg-black rounded-2xl border border-luxury-gold/40 shadow-2xl flex items-center justify-center">
             <button
               onClick={() => setPreviewVideo('')}
-              className="absolute top-4 right-4 text-white hover:text-luxury-red z-10 p-2 rounded-full bg-black/50 hover:bg-black transition-all"
+              className="absolute -top-3 -right-3 md:top-4 md:right-4 text-white hover:text-luxury-red z-10 p-2.5 rounded-full bg-neutral-900 shadow-xl border border-white/20 transition-all"
             >
               ✕
             </button>
-            <video src={previewVideo} controls autoPlay className="w-full aspect-[9/16]" />
+            <video src={previewVideo} controls autoPlay className="w-full h-full max-h-[85vh] object-contain rounded-2xl" />
           </div>
         </div>
       )}
