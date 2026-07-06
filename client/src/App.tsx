@@ -55,7 +55,7 @@ const LayoutWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) =>
       {/* Global Floating Whatsapp Chat widget */}
       {!isSpecialPath && (
         <a
-          href="https://wa.me/9108531238"
+          href="https://wa.me/9108531238?text=Hello%20GENZ%20Royal%20Hampers!%20I%20would%20like%20to%20know%20more%20about%20your%20premium%20gifting%20services."
           target="_blank"
           rel="noopener noreferrer"
           className="fixed bottom-[6.5rem] right-6 z-40 bg-[#25D366] text-white p-3.5 rounded-full shadow-[0_0_15px_rgba(37,211,102,0.4)] hover:scale-110 transition-all hover:shadow-[0_0_20px_rgba(37,211,102,0.6)] animate-fade-in-up"
