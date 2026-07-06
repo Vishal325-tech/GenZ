@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MessageSquare, X, Send, Sparkles, ShoppingBag } from 'lucide-react';
 
+import { Product, INITIAL_PRODUCTS, getAssetUrl } from '../data/initialData';
+
 interface ChatMessage {
   id: string;
   sender: 'user' | 'bot';
@@ -21,7 +23,7 @@ const AIChatBot: React.FC = () => {
     {
       id: 'welcome',
       sender: 'bot',
-      text: "Hello! I am your Gajanana Personal Shopping Assistant. 🎁\n\nTell me: who are you shopping for, what is the occasion (e.g., Anniversary, Birthday), or your budget? I will find the perfect luxury match!"
+      text: "Hello! I am your GENZ Royal Hampers Shopping Assistant. 🎁\n\nTell me: who are you shopping for, what is the occasion (e.g., Anniversary, Birthday), or your budget? I will find the perfect luxury match!"
     }
   ]);
   const [input, setInput] = useState('');
@@ -65,13 +67,33 @@ const AIChatBot: React.FC = () => {
       
       setMessages(prev => [...prev, botMsg]);
     } catch (err) {
-      console.error(err);
+      console.error("Using offline AI fallback:", err);
+      
+      // Offline fallback logic: search INITIAL_PRODUCTS for keywords in user input
+      const query = userText.toLowerCase();
+      const matchedProducts = INITIAL_PRODUCTS.filter(p => 
+        p.name.toLowerCase().includes(query) || 
+        p.category.toLowerCase().includes(query) ||
+        p.description.toLowerCase().includes(query)
+      ).slice(0, 3);
+
+      let fallbackText = "I found some exquisite luxury gifts that might be perfect for you!";
+      if (matchedProducts.length === 0) {
+        fallbackText = "I'm having trouble connecting to my live luxury database right now. Could you try checking our Shop page directly for the perfect gift?";
+      }
+
       setMessages(prev => [
         ...prev,
         {
-          id: `bot_err_${Date.now()}`,
+          id: `bot_fallback_${Date.now()}`,
           sender: 'bot',
-          text: "I apologize, but I am experiencing connectivity issues. Please search our Shop page or try again in a moment."
+          text: fallbackText,
+          products: matchedProducts.map(p => ({
+            _id: p._id,
+            name: p.name,
+            price: p.price,
+            images: [getAssetUrl(p.images[0])]
+          }))
         }
       ]);
     } finally {
