@@ -41,8 +41,21 @@ const Gallery: React.FC = () => {
     setSearchParams({});
   };
 
-  const handleShare = (url: string, type: 'v' | 'i') => {
+  const handleShare = async (url: string, type: 'v' | 'i') => {
     const shareUrl = `${window.location.origin}${import.meta.env.BASE_URL}gallery?${type}=${encodeURIComponent(url)}`;
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Check out this awesome media from GENZ Royal Hampers!',
+          url: shareUrl
+        });
+        return;
+      } catch (err) {
+        console.error('Error sharing:', err);
+      }
+    }
+    
+    // Fallback to clipboard
     navigator.clipboard.writeText(shareUrl);
     setCopiedLink(url);
     setTimeout(() => setCopiedLink(''), 2000);

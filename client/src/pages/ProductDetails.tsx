@@ -44,8 +44,21 @@ const ProductDetails: React.FC = () => {
   const [reviewPhoto, setReviewPhoto] = useState('');
   const [reviewMsg, setReviewMsg] = useState('');
 
-  const handleShareProduct = () => {
-    navigator.clipboard.writeText(window.location.href);
+  const handleShareProduct = async () => {
+    const shareUrl = window.location.href;
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `Check out ${product?.name || 'this luxury gift'} from GENZ Royal Hampers!`,
+          url: shareUrl
+        });
+        return;
+      } catch (err) {
+        console.error('Error sharing:', err);
+      }
+    }
+    
+    navigator.clipboard.writeText(shareUrl);
     setCopiedLink(true);
     setTimeout(() => setCopiedLink(false), 2000);
   };

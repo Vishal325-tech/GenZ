@@ -20,8 +20,21 @@ const Home: React.FC = () => {
   // Search state
   const [searchQuery, setSearchQuery] = useState('');
 
-  const handleShareVideo = (url: string) => {
+  const handleShareVideo = async (url: string) => {
     const shareUrl = `${window.location.origin}${import.meta.env.BASE_URL}gallery?v=${encodeURIComponent(url)}`;
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Check out this awesome Reel from GENZ Royal Hampers!',
+          url: shareUrl
+        });
+        return;
+      } catch (err) {
+        console.error('Error sharing:', err);
+      }
+    }
+    
+    // Fallback to clipboard
     navigator.clipboard.writeText(shareUrl);
     setCopiedLink(url);
     setTimeout(() => setCopiedLink(''), 2000);

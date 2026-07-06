@@ -70,7 +70,22 @@ const AIChatBot: React.FC = () => {
       console.error("Using offline AI fallback:", err);
       
       // Offline fallback logic: search INITIAL_PRODUCTS for keywords in user input
-      const query = userText.toLowerCase();
+      const query = userText.trim().toLowerCase();
+      const greetings = ['hi', 'hello', 'hey', 'greetings', 'hi!', 'hello!'];
+      
+      if (greetings.includes(query)) {
+        setMessages(prev => [
+          ...prev,
+          {
+            id: `bot_fallback_${Date.now()}`,
+            sender: 'bot',
+            text: "Hello there! 👋 I am your Royal Shopping Assistant. Are you looking for a birthday, anniversary, or wedding gift?",
+            products: []
+          }
+        ]);
+        return;
+      }
+
       const matchedProducts = INITIAL_PRODUCTS.filter(p => 
         p.name.toLowerCase().includes(query) || 
         p.category.toLowerCase().includes(query) ||
@@ -78,11 +93,7 @@ const AIChatBot: React.FC = () => {
       ).slice(0, 3);
 
       let fallbackText = "I found some exquisite luxury gifts that might be perfect for you!";
-      
-      const greetings = ['hi', 'hello', 'hey', 'greetings'];
-      if (greetings.some(g => query.includes(g)) && matchedProducts.length === 0) {
-        fallbackText = "Hello there! 👋 I am your Royal Shopping Assistant. Are you looking for a birthday, anniversary, or wedding gift?";
-      } else if (matchedProducts.length === 0) {
+      if (matchedProducts.length === 0) {
         fallbackText = "I'm having trouble connecting to my live luxury database right now. Could you try checking our Shop page directly for the perfect gift?";
       }
 

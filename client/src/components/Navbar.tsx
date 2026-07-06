@@ -75,12 +75,12 @@ const Navbar: React.FC = () => {
           <Link to="/" className="flex items-center space-x-2 group">
             <Zap className="h-8 w-8 text-[#8B0000] hover:text-luxury-gold transition-colors duration-300" />
             <div className="flex flex-col">
-              <span className="font-sans text-base md:text-lg font-black tracking-wider shimmer-red transition-all duration-300 drop-shadow-sm">
+              <span className="font-sans text-[11px] sm:text-base md:text-lg font-black tracking-wider shimmer-red transition-all duration-300 drop-shadow-sm leading-tight">
                 GENZ ROYAL HAMPERS
               </span>
-              <span className="text-[9px] uppercase tracking-widest text-luxury-red/80 dark:text-luxury-red/70 font-semibold flex items-center gap-1.5 mt-0.5">
-                <span>Royal Celebration & Hampers</span>
-                <span className="bg-[#8B0000] text-white text-[7px] px-1.5 py-0.5 rounded-full font-bold border border-luxury-red-dark/40 shadow-sm">CEO Vishal S H</span>
+              <span className="text-[7px] sm:text-[9px] uppercase tracking-widest text-luxury-red/80 dark:text-luxury-red/70 font-semibold flex flex-wrap items-center gap-1 mt-0.5">
+                <span className="shrink-0">Royal Celebration & Hampers</span>
+                <span className="bg-[#8B0000] text-white text-[6px] sm:text-[7px] px-1.5 py-0.5 rounded-full font-bold border border-luxury-red-dark/40 shadow-sm shrink-0 whitespace-nowrap">CEO Vishal S H</span>
               </span>
             </div>
           </Link>
@@ -177,7 +177,7 @@ const Navbar: React.FC = () => {
             {/* Dark Mode toggle */}
             <button
               onClick={toggleTheme}
-              className="hidden sm:block p-1.5 sm:p-2 rounded-full hover:bg-luxury-cream-dark dark:hover:bg-luxury-black-soft text-luxury-gold"
+              className="p-1.5 sm:p-2 rounded-full hover:bg-luxury-cream-dark dark:hover:bg-luxury-black-soft text-luxury-gold shrink-0"
               title="Toggle Theme"
             >
               {theme === 'light' ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
@@ -186,7 +186,7 @@ const Navbar: React.FC = () => {
             {/* Wishlist */}
             <Link
               to="/account?tab=wishlist"
-              className="p-1.5 sm:p-2 rounded-full hover:bg-luxury-cream-dark dark:hover:bg-luxury-black-soft text-luxury-gold relative"
+              className="p-1.5 sm:p-2 rounded-full hover:bg-luxury-cream-dark dark:hover:bg-luxury-black-soft text-luxury-gold relative shrink-0"
               title="Wishlist"
             >
               <Heart className="h-5 w-5" />
@@ -200,7 +200,7 @@ const Navbar: React.FC = () => {
             {/* Cart */}
             <Link
               to="/cart"
-              className="p-1.5 sm:p-2 rounded-full hover:bg-luxury-cream-dark dark:hover:bg-luxury-black-soft text-luxury-gold relative"
+              className="p-1.5 sm:p-2 rounded-full hover:bg-luxury-cream-dark dark:hover:bg-luxury-black-soft text-luxury-gold relative shrink-0"
               title="Cart"
             >
               <ShoppingCart className="h-5 w-5" />
