@@ -40,7 +40,7 @@ const AIChatBot: React.FC = () => {
 
     const userText = input.trim();
     setInput('');
-    
+
     // Append User Message
     const userMsg: ChatMessage = {
       id: `usr_${Date.now()}`,
@@ -57,64 +57,33 @@ const AIChatBot: React.FC = () => {
         body: JSON.stringify({ message: userText })
       });
       const data = await res.json();
-      
+
       const botMsg: ChatMessage = {
         id: `bot_${Date.now()}`,
         sender: 'bot',
         text: data.reply,
         products: data.products || []
       };
-      
+
       setMessages(prev => [...prev, botMsg]);
     } catch (err) {
       console.error("Using offline AI fallback:", err);
-      
+
       // Offline fallback logic: search INITIAL_PRODUCTS for keywords in user input
-      const query = userText.trim().toLowerCase();
-      
-      const greetings = ['hi', 'hello', 'hey', 'greetings', 'hi!', 'hello!'];
-      const conversational = ['yes', 'yeah', 'yep', 'ok', 'okay', 'sure'];
-      
-      if (greetings.includes(query)) {
-        setMessages(prev => [
-          ...prev,
-          {
-            id: `bot_fallback_${Date.now()}`,
-            sender: 'bot',
-            text: "Hello there! 👋 I am your Royal Shopping Assistant. Are you looking for a birthday, anniversary, or wedding gift?",
-            products: []
-          }
-        ]);
-        return;
-      }
-
-      if (conversational.includes(query)) {
-        setMessages(prev => [
-          ...prev,
-          {
-            id: `bot_fallback_${Date.now()}`,
-            sender: 'bot',
-            text: "Great! Tell me a bit more about what you're looking for, or mention an occasion like a Birthday or Anniversary.",
-            products: []
-          }
-        ]);
-        return;
-      }
-
-      // Handle common typos
-      let normalizedQuery = query;
-      if (query.includes('birtday') || query.includes('bday')) normalizedQuery = 'birthday';
-      if (query.includes('aniversary') || query.includes('aniv')) normalizedQuery = 'anniversary';
-
-      const matchedProducts = INITIAL_PRODUCTS.filter(p => 
-        p.name.toLowerCase().includes(normalizedQuery) || 
-        p.category.toLowerCase().includes(normalizedQuery) ||
-        p.description.toLowerCase().includes(normalizedQuery)
+      const query = userText.toLowerCase();
+      const matchedProducts = INITIAL_PRODUCTS.filter(p =>
+        p.name.toLowerCase().includes(query) ||
+        p.category.toLowerCase().includes(query) ||
+        p.description.toLowerCase().includes(query)
       ).slice(0, 3);
 
       let fallbackText = "I found some exquisite luxury gifts that might be perfect for you!";
-      if (matchedProducts.length === 0) {
-        fallbackText = "I couldn't find an exact match for that! We specialize in ultra-premium Birthday, Anniversary, and Wedding hampers. Could you try searching for one of those, or check our Shop page directly?";
+
+      const greetings = ['hi', 'hello', 'hey', 'greetings'];
+      if (greetings.some(g => query.includes(g)) && matchedProducts.length === 0) {
+        fallbackText = "Hello Buddy! 👋 I am your GenZ Royal Shopping Assistant. Are you looking for a birthday, anniversary, or wedding gift?";
+      } else if (matchedProducts.length === 0) {
+        fallbackText = "I'm having trouble connecting to my live luxury database right now. Could you try checking our Shop page directly for the perfect gift?";
       }
 
       setMessages(prev => [
@@ -152,7 +121,7 @@ const AIChatBot: React.FC = () => {
       {/* Expanded Chat Window */}
       {isOpen && (
         <div className="w-[340px] sm:w-[380px] h-[500px] flex flex-col rounded-2xl border border-luxury-gold/30 bg-luxury-cream dark:bg-luxury-black-soft shadow-2xl overflow-hidden animate-scaleUp">
-          
+
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-luxury-red to-luxury-red-dark border-b border-luxury-gold/20 text-white">
             <div className="flex items-center space-x-2">
@@ -183,11 +152,10 @@ const AIChatBot: React.FC = () => {
                 className={`flex flex-col ${msg.sender === 'user' ? 'items-end' : 'items-start'}`}
               >
                 <div
-                  className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-xs leading-relaxed whitespace-pre-line ${
-                    msg.sender === 'user'
-                      ? 'bg-luxury-gold text-luxury-black font-medium rounded-tr-none'
-                      : 'bg-white dark:bg-luxury-black text-luxury-black-dark dark:text-white rounded-tl-none border border-luxury-gold/15'
-                  }`}
+                  className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-xs leading-relaxed whitespace-pre-line ${msg.sender === 'user'
+                    ? 'bg-luxury-gold text-luxury-black font-medium rounded-tr-none'
+                    : 'bg-white dark:bg-luxury-black text-luxury-black-dark dark:text-white rounded-tl-none border border-luxury-gold/15'
+                    }`}
                 >
                   {msg.text}
                 </div>
