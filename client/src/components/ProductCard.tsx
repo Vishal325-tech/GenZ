@@ -4,6 +4,7 @@ import { Heart, Eye, MessageCircle, Mail } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import QuickViewModal from './QuickViewModal';
+import { getAssetUrl } from '../data/initialData';
 
 export interface ProductCardProps {
   product: {
@@ -99,7 +100,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         {/* Product Image */}
         <div className="w-full aspect-[4/5] bg-luxury-cream-dark overflow-hidden relative">
           <img
-            src={product.images[0] || 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=500'}
+            src={getAssetUrl(product.images[0])}
             alt={product.name}
             loading="lazy"
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"

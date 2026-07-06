@@ -3,33 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Sparkles, MessageCircle, Star, Award, Compass, Truck, Search, Heart, ShieldCheck, Gift } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
 import { useLanguage } from '../context/LanguageContext';
-
-interface Product {
-  _id: string;
-  name: string;
-  price: number;
-  offerPrice?: number;
-  description: string;
-  stock: number;
-  category: string;
-  images: string[];
-  ratingAverage: number;
-  tags?: string[];
-}
-
-interface Category {
-  _id: string;
-  name: string;
-  image: string;
-}
-
-interface MediaItem {
-  _id: string;
-  name: string;
-  url: string;
-  mimetype: string;
-  category?: string;
-}
+import { Product, Category, MediaItem, getAssetUrl, INITIAL_CATEGORIES, INITIAL_PRODUCTS, INITIAL_MEDIA } from '../data/initialData';
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
@@ -63,22 +37,10 @@ const Home: React.FC = () => {
           setLiveMedia(mediaData);
         }
       } catch (err) {
-        console.error('Failed to fetch home page data, using mock data:', err);
-        // Fallback mock data for GitHub Pages static hosting
-        setCategories([
-          { _id: '1', name: "Birthday", image: "https://images.unsplash.com/photo-1530103862679-de3029a59bc8?w=500" },
-          { _id: '2', name: "Anniversary", image: "https://images.unsplash.com/photo-1583847268964-b28e56b46ef4?w=500" },
-          { _id: '3', name: "Valentine's Day", image: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=500" },
-          { _id: '4', name: "Wedding", image: "https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=500" },
-          { _id: '5', name: "Baby Shower", image: "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=500" },
-          { _id: '6', name: "Corporate Gifts", image: "https://images.unsplash.com/photo-1513128034602-7814ccaddd4e?w=500" }
-        ]);
-        setAllProducts([
-          { _id: 'p1', name: 'Luxury Birthday Hamper', price: 0, description: 'Elegant curated birthday hamper.', stock: 10, category: 'Birthday', images: ['https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=500'], ratingAverage: 5, tags: ['trending', 'featured'] },
-          { _id: 'p2', name: 'Premium Anniversary Chocolate Box', price: 0, description: 'Handcrafted chocolates.', stock: 5, category: 'Chocolate', images: ['https://images.unsplash.com/photo-1548907040-4baa42d10919?w=500'], ratingAverage: 4.8, tags: ['best_seller', 'featured'] },
-          { _id: 'p3', name: 'Classic Red Roses Bouquet', price: 0, description: 'Freshly cut premium roses.', stock: 15, category: 'Flower', images: ['https://images.unsplash.com/photo-1562690868-60bbe7293e94?w=500'], ratingAverage: 4.9, tags: ['trending'] },
-          { _id: 'p4', name: 'Giant Teddy Bear', price: 0, description: 'Soft plush teddy bear.', stock: 2, category: 'Teddy', images: ['https://images.unsplash.com/photo-1559441113-d3c52a0a382c?w=500'], ratingAverage: 4.7, tags: ['best_seller'] }
-        ]);
+        console.error('Using built-in data (no backend):', err);
+        setCategories(INITIAL_CATEGORIES);
+        setAllProducts(INITIAL_PRODUCTS);
+        setLiveMedia(INITIAL_MEDIA);
       } finally {
         setLoading(false);
       }
@@ -251,7 +213,7 @@ const Home: React.FC = () => {
                 className="group relative h-48 rounded-2xl overflow-hidden border border-luxury-gold/10 hover:border-luxury-gold shadow-md cursor-pointer transition-all duration-500"
               >
                 <img
-                  src={cat.image || 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=500'}
+                  src={getAssetUrl(cat.image)}
                   alt={cat.name}
                   loading="lazy"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"

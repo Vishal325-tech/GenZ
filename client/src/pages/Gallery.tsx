@@ -1,22 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Film, Image as ImageIcon, Play, Eye } from 'lucide-react';
+import { MediaItem, getAssetUrl, INITIAL_MEDIA } from '../data/initialData';
 
-interface MediaItem {
-  _id: string;
-  name: string;
-  url: string;
-  mimetype: string;
-  category?: string;
-}
-
-const STATIC_GALLERY: MediaItem[] = [
-  { _id: 'stat_1', name: 'Royal Anniversary Setup', url: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=500', mimetype: 'image/jpeg', category: 'Anniversary Gifts' },
-  { _id: 'stat_2', name: 'Birthday Flower Bouquet Wrapping', url: 'https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=500', mimetype: 'image/jpeg', category: 'Birthday Gifts' },
-  { _id: 'stat_3', name: 'Wedding Hamper Preparation', url: 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=500', mimetype: 'image/jpeg', category: 'Wedding Gifts' },
-  { _id: 'stat_4', name: 'Premium Chocolates Arrangement', url: 'https://images.unsplash.com/photo-1511381939415-e44015466834?w=500', mimetype: 'image/jpeg', category: 'Birthday Gifts' },
-  { _id: 'stat_5', name: 'Customer Handover Bangalore', url: 'https://images.unsplash.com/photo-1471193945509-9ad0617afabf?w=500', mimetype: 'image/jpeg', category: 'Customer Deliveries' },
-  { _id: 'stat_6', name: 'Unboxing Celebration Video', url: 'https://www.w3schools.com/html/mov_bbb.mp4', mimetype: 'video/mp4', category: 'Customer Deliveries' }
-];
+const STATIC_GALLERY: MediaItem[] = INITIAL_MEDIA;
 
 const Gallery: React.FC = () => {
   const [media, setMedia] = useState<MediaItem[]>([]);
@@ -42,7 +28,7 @@ const Gallery: React.FC = () => {
         
         setMedia([...mappedDbMedia, ...STATIC_GALLERY]);
       } catch (err) {
-        console.error(err);
+        console.error("Using built-in media data:", err);
         setMedia(STATIC_GALLERY);
       } finally {
         setLoading(false);

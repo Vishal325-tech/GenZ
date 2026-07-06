@@ -2,19 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Filter, SlidersHorizontal, ArrowUpDown } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
-
-interface Product {
-  _id: string;
-  name: string;
-  price: number;
-  offerPrice?: number;
-  description: string;
-  stock: number;
-  category: string;
-  images: string[];
-  ratingAverage: number;
-  tags?: string[];
-}
+import { Product, INITIAL_PRODUCTS } from '../data/initialData';
 
 const Shop: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -68,15 +56,8 @@ const Shop: React.FC = () => {
 
         setProducts(filteredData);
       } catch (err) {
-        console.error('Failed to load shop items, using mock data:', err);
-        setProducts([
-          { _id: 'p1', name: 'Luxury Birthday Hamper', price: 0, description: 'Elegant curated birthday hamper.', stock: 10, category: 'Birthday', images: ['https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=500'], ratingAverage: 5, tags: ['trending', 'featured'] },
-          { _id: 'p2', name: 'Premium Anniversary Chocolate Box', price: 0, description: 'Handcrafted chocolates.', stock: 5, category: 'Chocolate', images: ['https://images.unsplash.com/photo-1548907040-4baa42d10919?w=500'], ratingAverage: 4.8, tags: ['best_seller', 'featured'] },
-          { _id: 'p3', name: 'Classic Red Roses Bouquet', price: 0, description: 'Freshly cut premium roses.', stock: 15, category: 'Flower', images: ['https://images.unsplash.com/photo-1562690868-60bbe7293e94?w=500'], ratingAverage: 4.9, tags: ['trending'] },
-          { _id: 'p4', name: 'Giant Teddy Bear', price: 0, description: 'Soft plush teddy bear.', stock: 2, category: 'Teddy', images: ['https://images.unsplash.com/photo-1559441113-d3c52a0a382c?w=500'], ratingAverage: 4.7, tags: ['best_seller'] },
-          { _id: 'p5', name: 'Exquisite Wedding Gift Box', price: 0, description: 'A beautiful wedding gift box.', stock: 3, category: 'Wedding', images: ['https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=500'], ratingAverage: 4.9, tags: ['trending'] },
-          { _id: 'p6', name: 'Corporate Elegance Hamper', price: 0, description: 'Professional luxury corporate hamper.', stock: 20, category: 'Corporate', images: ['https://images.unsplash.com/photo-1513128034602-7814ccaddd4e?w=500'], ratingAverage: 4.5, tags: ['best_seller'] }
-        ]);
+        console.error('Using built-in data (no backend):', err);
+        setProducts(INITIAL_PRODUCTS);
       } finally {
         setLoading(false);
       }

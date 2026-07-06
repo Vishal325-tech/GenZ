@@ -4,33 +4,7 @@ import { Calendar, Clock, ShoppingCart, Heart, Video, Image, Check, Star, Corner
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import CustomCardDesigner from '../components/CustomCardDesigner';
-
-interface Review {
-  _id?: string;
-  userName: string;
-  rating: number;
-  comment: string;
-  photo?: string;
-  video?: string;
-  reply?: string;
-  approved: boolean;
-  createdAt: string;
-}
-
-interface Product {
-  _id: string;
-  name: string;
-  price: number;
-  offerPrice?: number;
-  description: string;
-  stock: number;
-  category: string;
-  images: string[];
-  videos?: string[];
-  tags?: string[];
-  reviews: Review[];
-  ratingAverage: number;
-}
+import { Product, getAssetUrl, INITIAL_PRODUCTS } from '../data/initialData';
 
 const ProductDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -83,8 +57,15 @@ const ProductDetails: React.FC = () => {
       const relData = await relRes.json();
       setRelated(relData.filter((p: Product) => p._id !== data._id).slice(0, 4));
     } catch (err) {
-      console.error(err);
-      navigate('/shop');
+      console.error("Using built-in product data (no backend):", err);
+      const staticProd = INITIAL_PRODUCTS.find(p => p._id === id);
+      if (staticProd) {
+        setProduct(staticProd);
+        setActiveImage(staticProd.images[0] || 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=500');
+        setRelated(INITIAL_PRODUCTS.filter(p => p._id !== id && p.category === staticProd.category).slice(0, 4));
+      } else {
+        navigate('/shop');
+      }
     } finally {
       setLoading(false);
     }
@@ -217,27 +198,27 @@ const ProductDetails: React.FC = () => {
       {/* Product Details Header Layout */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
         
-        {/* Left Column: Image Gallery with Zoom */}
-        <div className="space-y-4">
-          <div className="zoom-container w-full aspect-[4/5] rounded-2xl border border-luxury-gold/25 overflow-hidden shadow-lg bg-white">
+        {/* Product Images section */}
+        <div className="md:col-span-1 space-y-4">
+          <div className="w-full aspect-square bg-white dark:bg-luxury-black rounded-2xl overflow-hidden border border-luxury-gold/20 shadow-lg relative">
             <img
-              src={activeImage}
+              src={getAssetUrl(activeImage)}
               alt={product.name}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
             />
           </div>
 
           {/* Thumbnail row selector */}
           <div className="flex space-x-3 overflow-x-auto pb-1">
-            {product.images.map((img, idx) => (
+            {product.images.map((img, index) => (
               <button
-                key={idx}
+                key={index}
                 onClick={() => setActiveImage(img)}
-                className={`h-16 w-16 shrink-0 rounded-lg overflow-hidden border transition-all ${
-                  activeImage === img ? 'border-luxury-gold scale-102 shadow-sm' : 'border-neutral-200 dark:border-neutral-700 opacity-70 hover:opacity-100'
+                className={`aspect-square rounded-lg overflow-hidden border-2 transition-all ${
+                  activeImage === img ? 'border-luxury-gold shadow-md' : 'border-transparent hover:border-luxury-gold/50'
                 }`}
               >
-                <img src={img} alt="thumbnail" className="w-full h-full object-cover" />
+                <img src={getAssetUrl(img)} alt={`${product.name} ${index + 1}`} className="w-full h-full object-cover" />
               </button>
             ))}
           </div>

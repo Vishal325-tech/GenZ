@@ -64,7 +64,7 @@ const App: React.FC = () => {
           {/* Note: In CartContext.tsx we declared CartProvider. We import from CartContext */}
           <CartProvider>
             <WishlistProvider>
-              <Router>
+              <Router basename={import.meta.env.BASE_URL}>
                 <LayoutWrapper>
                   <Routes>
                     <Route path="/" element={<Home />} />
