@@ -1,3 +1,17 @@
+# Ignore ALL node_modules directories everywhere in the project
 node_modules/
+
+# Build output
 dist/
+
+# Environment variables
 .env
+.env.local
+.env.*.local
+
+# Temp files
+temp-ignore.bak
+*.bak
+
+# Git worktree leftovers
+.git/

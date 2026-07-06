@@ -63,7 +63,22 @@ const Home: React.FC = () => {
           setLiveMedia(mediaData);
         }
       } catch (err) {
-        console.error('Failed to fetch home page data:', err);
+        console.error('Failed to fetch home page data, using mock data:', err);
+        // Fallback mock data for GitHub Pages static hosting
+        setCategories([
+          { _id: '1', name: "Birthday", image: "https://images.unsplash.com/photo-1530103862679-de3029a59bc8?w=500" },
+          { _id: '2', name: "Anniversary", image: "https://images.unsplash.com/photo-1583847268964-b28e56b46ef4?w=500" },
+          { _id: '3', name: "Valentine's Day", image: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=500" },
+          { _id: '4', name: "Wedding", image: "https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=500" },
+          { _id: '5', name: "Baby Shower", image: "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=500" },
+          { _id: '6', name: "Corporate Gifts", image: "https://images.unsplash.com/photo-1513128034602-7814ccaddd4e?w=500" }
+        ]);
+        setAllProducts([
+          { _id: 'p1', name: 'Luxury Birthday Hamper', price: 0, description: 'Elegant curated birthday hamper.', stock: 10, category: 'Birthday', images: ['https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=500'], ratingAverage: 5, tags: ['trending', 'featured'] },
+          { _id: 'p2', name: 'Premium Anniversary Chocolate Box', price: 0, description: 'Handcrafted chocolates.', stock: 5, category: 'Chocolate', images: ['https://images.unsplash.com/photo-1548907040-4baa42d10919?w=500'], ratingAverage: 4.8, tags: ['best_seller', 'featured'] },
+          { _id: 'p3', name: 'Classic Red Roses Bouquet', price: 0, description: 'Freshly cut premium roses.', stock: 15, category: 'Flower', images: ['https://images.unsplash.com/photo-1562690868-60bbe7293e94?w=500'], ratingAverage: 4.9, tags: ['trending'] },
+          { _id: 'p4', name: 'Giant Teddy Bear', price: 0, description: 'Soft plush teddy bear.', stock: 2, category: 'Teddy', images: ['https://images.unsplash.com/photo-1559441113-d3c52a0a382c?w=500'], ratingAverage: 4.7, tags: ['best_seller'] }
+        ]);
       } finally {
         setLoading(false);
       }
