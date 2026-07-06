@@ -12,10 +12,15 @@ export interface Product {
   ratingAverage: number;
   tags?: string[];
   reviews?: Array<{
+    _id?: string;
     userName: string;
     rating: number;
     comment: string;
     approved: boolean;
+    createdAt?: string;
+    reply?: string;
+    photo?: string;
+    video?: string;
   }>;
 }
 

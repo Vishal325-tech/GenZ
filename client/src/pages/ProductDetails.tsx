@@ -244,7 +244,7 @@ const ProductDetails: React.FC = () => {
                 ))}
               </div>
               <span className="text-xs text-luxury-black/50 dark:text-white/50 font-medium">
-                ({product.ratingAverage.toFixed(1)} Average / {product.reviews.filter(r => r.approved).length} customer reviews)
+                ({product.ratingAverage.toFixed(1)} Average / {(product.reviews || []).filter(r => r.approved).length} customer reviews)
               </span>
             </div>
 
@@ -370,10 +370,10 @@ const ProductDetails: React.FC = () => {
 
         {/* Existing reviews list */}
         <div className="space-y-4">
-          {product.reviews.filter(r => r.approved).length === 0 ? (
+          {(product.reviews || []).filter(r => r.approved).length === 0 ? (
             <p className="text-xs text-luxury-black/50 dark:text-white/50 italic">No approved reviews yet for this product. Be the first to leave one!</p>
           ) : (
-            product.reviews.filter(r => r.approved).map((rev) => (
+            (product.reviews || []).filter(r => r.approved).map((rev) => (
               <div key={rev._id || Math.random()} className="border-b border-neutral-100 dark:border-neutral-800 pb-4 space-y-2">
                 <div className="flex justify-between items-start">
                   <div>
@@ -387,7 +387,7 @@ const ProductDetails: React.FC = () => {
                     </div>
                   </div>
                   <span className="text-[10px] text-luxury-black/40 dark:text-white/40">
-                    {new Date(rev.createdAt).toLocaleDateString()}
+                    {rev.createdAt ? new Date(rev.createdAt).toLocaleDateString() : 'Recent'}
                   </span>
                 </div>
                 <p className="text-xs text-luxury-black/70 dark:text-white/70 leading-relaxed font-light">
