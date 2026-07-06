@@ -148,7 +148,7 @@ export const getInvoice = async (req, res) => {
       <!DOCTYPE html>
       <html>
       <head>
-        <title>Invoice - Gajanana Royal Hampers</title>
+        <title>Invoice - GenZ Royal Hampers</title>
         <style>
           body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333; margin: 0; padding: 40px; }
           .invoice-box { max-width: 800px; margin: auto; border: 1px solid #eee; padding: 30px; box-shadow: 0 0 10px rgba(0, 0, 0, .15); font-size: 16px; line-height: 24px; }
@@ -180,7 +180,7 @@ export const getInvoice = async (req, res) => {
                 <table>
                   <tr>
                     <td>
-                      <div class="title">GAJANANA ROYAL HAMPERS</div>
+                      <div class="title">GENZ ROYAL HAMPERS</div>
                       <div class="subtitle">ULTRA-PREMIUM & CELEBRATION GIFTS</div>
                     </td>
                     <td>
@@ -198,10 +198,10 @@ export const getInvoice = async (req, res) => {
                   <tr>
                     <td>
                       <strong>From:</strong><br>
-                      Gajanana Royal Hampers Inc.<br>
-                      100 Luxury Palace, Gold Sector<br>
+                      GenZ Royal Hampers Inc.<br>
+                      123 Luxury Avenue, Bangalore<br>
                       Bangalore, KA, India<br>
-                      support@gajananaroyalhampers.com
+                      support@genzroyal.com
                     </td>
                     <td>
                       <strong>Deliver To:</strong><br>
@@ -251,8 +251,8 @@ export const getInvoice = async (req, res) => {
             </tr>
           </table>
           <div class="footer">
-            Thank you for ordering with Gajanana Royal Hampers. We deliver luxury in every box!<br>
-            For any inquiries, reach us at support@gajananaroyalhampers.com
+            Thank you for ordering with GenZ Royal Hampers. We deliver luxury in every box!<br>
+            For any inquiries, reach us at support@genzroyal.com
           </div>
         </div>
         <script>
