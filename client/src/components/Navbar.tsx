@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, ShoppingCart, Heart, User, Sun, Moon, Globe, Mic, Menu, X, Zap } from 'lucide-react';
+import { Search, ShoppingCart, Heart, User, Sun, Moon, Globe, Mic, Menu, X, Zap, Home as HomeIcon } from 'lucide-react';
+import BrandLogo from './BrandLogo';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
@@ -72,17 +73,8 @@ const Navbar: React.FC = () => {
         <div className="flex items-center justify-between h-20">
           
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2 group">
-            <Zap className="h-8 w-8 text-[#8B0000] hover:text-luxury-gold transition-colors duration-300" />
-            <div className="flex flex-col">
-              <span className="font-sans text-[11px] sm:text-base md:text-lg font-black tracking-wider shimmer-red transition-all duration-300 drop-shadow-sm leading-tight">
-                GENZ ROYAL HAMPERS
-              </span>
-              <span className="text-[7px] sm:text-[9px] uppercase tracking-widest text-luxury-red/80 dark:text-luxury-red/70 font-semibold flex flex-wrap items-center gap-1 mt-0.5">
-                <span className="shrink-0">Royal Celebration & Hampers</span>
-                <span className="bg-[#8B0000] text-white text-[6px] sm:text-[7px] px-1.5 py-0.5 rounded-full font-bold border border-luxury-red-dark/40 shadow-sm shrink-0 whitespace-nowrap">CEO Vishal S H</span>
-              </span>
-            </div>
+          <Link to="/" className="flex items-center group transition-transform duration-300 hover:scale-105">
+            <BrandLogo />
           </Link>
 
           {/* Search bar Desktop */}
@@ -107,8 +99,9 @@ const Navbar: React.FC = () => {
 
           {/* Navigation Links Desktop */}
           <div className="hidden lg:flex items-center space-x-6">
-            <Link to="/" className="text-sm font-medium text-luxury-black/80 dark:text-white/80 hover:text-luxury-red dark:hover:text-luxury-gold transition-colors">
-              {t('home')}
+            <Link to="/" className="flex items-center gap-1.5 text-sm font-medium text-luxury-black/80 dark:text-white/80 hover:text-luxury-red dark:hover:text-luxury-gold transition-colors" title="Home">
+              <HomeIcon className="w-4 h-4" />
+              <span>{t('home')}</span>
             </Link>
             <Link to="/shop" className="text-sm font-medium text-luxury-black/80 dark:text-white/80 hover:text-luxury-red dark:hover:text-luxury-gold transition-colors">
               {t('shop')}

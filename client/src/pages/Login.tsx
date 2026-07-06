@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ShieldCheck, Mail, Lock, Phone, Key, Chrome, Check } from 'lucide-react';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
+import { Eye, EyeOff, Lock, Mail, User, AlertCircle, ArrowRight, ShieldCheck, Check, Phone, Key, Chrome } from 'lucide-react';
+import BrandLogo from '../components/BrandLogo';
 import { useAuth } from '../context/AuthContext';
 
 const Login: React.FC = () => {
@@ -245,14 +246,9 @@ const Login: React.FC = () => {
     <div className="max-w-md mx-auto px-4 py-16 min-h-[80vh] flex flex-col justify-center">
       <div className="bg-white dark:bg-luxury-black-soft border border-luxury-gold/35 rounded-3xl p-6 md:p-8 shadow-2xl space-y-6 relative overflow-hidden">
         
-        {/* Logo Text */}
-        <div className="text-center space-y-1">
-          <h2 className="font-serif text-xl font-bold tracking-wider text-luxury-red dark:text-luxury-gold">
-            GAJANANA ROYAL HAMPERS
-          </h2>
-          <p className="text-[10px] text-neutral-400 font-semibold uppercase tracking-widest">
-            Luxury Celebration & Hampers
-          </p>
+        {/* Logo */}
+        <div className="flex justify-center">
+          <BrandLogo />
         </div>
 
         {error && (

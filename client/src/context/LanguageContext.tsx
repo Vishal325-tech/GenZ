@@ -6,7 +6,7 @@ type Translations = Record<string, string>;
 
 const dictionaries: Record<Language, Translations> = {
   en: {
-    title: "Gajanana Royal Hampers",
+    title: "GenZ Royal Hampers",
     subtitle: "Ultra-Premium Luxury Gift Baskets & Hampers",
     home: "Home",
     shop: "Shop",

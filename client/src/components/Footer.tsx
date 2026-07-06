@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, Phone, MapPin, Clock, Facebook, Instagram, Twitter, Heart, CheckCircle, Zap } from 'lucide-react';
+import BrandLogo from './BrandLogo';
 
 const Footer: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -21,11 +22,8 @@ const Footer: React.FC = () => {
         
         {/* Brand Information */}
         <div className="space-y-4">
-          <div className="flex items-center space-x-2">
-            <Zap className="h-6 w-6 text-[#8B0000]" />
-            <span className="font-sans text-xl font-black tracking-wider shimmer-red drop-shadow-sm">
-              GENZ ROYAL HAMPERS
-            </span>
+          <div className="flex items-center">
+            <BrandLogo isDarkTheme={true} />
           </div>
           <p className="text-sm text-luxury-cream-dark/60 leading-relaxed">
             Delivering luxury and premium curated celebration hampers directly to your loved ones. Hand-wrapped with love, ribboned to perfection.

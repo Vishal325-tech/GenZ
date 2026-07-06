@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Truck, CheckCircle, ShieldCheck, MapPin, Phone, Calendar, Clock, Loader2, Sparkles, LogOut, Lock } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import BrandLogo from '../components/BrandLogo';
 
 interface OrderProduct {
   productId: string;
@@ -124,14 +125,9 @@ const DeliveryDashboard: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
           
           <div className="flex items-center space-x-3">
-            <div className="p-2 bg-luxury-gold/15 rounded-lg border border-luxury-gold/30">
-              <Truck className="h-6 w-6 text-luxury-gold animate-pulse" />
-            </div>
+            <BrandLogo isDarkTheme={true} />
             <div>
-              <h1 className="font-serif text-lg md:text-xl font-bold tracking-wider text-white">
-                Gajanana Royal Hampers
-              </h1>
-              <span className="text-[10px] text-luxury-gold uppercase tracking-widest font-semibold">
+              <span className="text-[10px] sm:text-xs text-luxury-gold uppercase tracking-widest font-semibold block mt-1">
                 Delivery Executive Console
               </span>
             </div>

@@ -5,6 +5,7 @@ import {
   Users, Star, Image, Ticket, Settings, Mail, Plus, Trash2, Edit, Check, Link as LinkIcon
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import BrandLogo from '../components/BrandLogo';
 
 // Types
 interface Product {
@@ -453,8 +454,8 @@ const AdminDashboard: React.FC = () => {
       {/* Sidebar Navigation */}
       <div className="w-64 bg-neutral-950 border-r border-luxury-gold/15 p-4 flex flex-col justify-between shrink-0">
         <div>
-          <div className="text-center pb-6 border-b border-luxury-gold/15 mb-6">
-            <h2 className="font-serif text-sm font-bold tracking-wider text-luxury-gold">GAJANANA ROYAL HAMPERS</h2>
+          <div className="text-center pb-6 border-b border-luxury-gold/15 mb-6 flex flex-col items-center">
+            <BrandLogo isDarkTheme={true} />
             <span className="text-[9px] uppercase tracking-widest text-neutral-500 font-bold block">Cockpit Control</span>
           </div>
 
