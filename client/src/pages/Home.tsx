@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Sparkles, MessageCircle, Star, Award, Compass, Truck, Search, Heart, ShieldCheck, Gift } from 'lucide-react';
+import { Sparkles, MessageCircle, Star, Award, Compass, Truck, Search, Heart, ShieldCheck, Gift, Play, Check, Share2 } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
 import { useLanguage } from '../context/LanguageContext';
 import { Product, Category, MediaItem, getAssetUrl, INITIAL_CATEGORIES, INITIAL_PRODUCTS, INITIAL_MEDIA } from '../data/initialData';
@@ -14,10 +14,18 @@ const Home: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [liveMedia, setLiveMedia] = useState<MediaItem[]>([]);
   const [previewVideo, setPreviewVideo] = useState('');
+  const [copiedLink, setCopiedLink] = useState('');
   const [loading, setLoading] = useState(true);
   
   // Search state
   const [searchQuery, setSearchQuery] = useState('');
+
+  const handleShareVideo = (url: string) => {
+    const shareUrl = `${window.location.origin}${import.meta.env.BASE_URL}gallery?v=${encodeURIComponent(url)}`;
+    navigator.clipboard.writeText(shareUrl);
+    setCopiedLink(url);
+    setTimeout(() => setCopiedLink(''), 2000);
+  };
 
   // Load products, categories & media
   useEffect(() => {
@@ -509,12 +517,24 @@ const Home: React.FC = () => {
       {previewVideo && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm">
           <div className="relative w-full max-w-3xl max-h-[85vh] bg-black rounded-2xl border border-luxury-gold/40 shadow-2xl flex items-center justify-center">
-            <button
-              onClick={() => setPreviewVideo('')}
-              className="absolute -top-3 -right-3 md:top-4 md:right-4 text-white hover:text-luxury-red z-10 p-2.5 rounded-full bg-neutral-900 shadow-xl border border-white/20 transition-all"
-            >
-              ✕
-            </button>
+            
+            <div className="absolute -top-3 -right-3 md:top-4 md:right-4 flex flex-col gap-2 z-10">
+              <button
+                onClick={() => setPreviewVideo('')}
+                className="p-2.5 rounded-full bg-neutral-900 shadow-xl border border-white/20 text-white hover:text-luxury-red transition-all"
+                title="Close"
+              >
+                ✕
+              </button>
+              <button
+                onClick={() => handleShareVideo(previewVideo)}
+                className="p-2.5 rounded-full bg-neutral-900 shadow-xl border border-white/20 text-white hover:text-luxury-gold transition-all"
+                title="Share Reel Link"
+              >
+                {copiedLink === previewVideo ? <Check className="h-5 w-5 text-green-500" /> : <Share2 className="h-5 w-5" />}
+              </button>
+            </div>
+
             <video src={previewVideo} controls autoPlay className="w-full h-full max-h-[85vh] object-contain rounded-2xl" />
           </div>
         </div>

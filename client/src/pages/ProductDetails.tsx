@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Calendar, Clock, ShoppingCart, Heart, Video, Image, Check, Star, CornerDownRight, MessageCircle, Mail } from 'lucide-react';
+import { Calendar, Clock, ShoppingCart, Heart, Video, Image, Check, Star, CornerDownRight, MessageCircle, Mail, Share2 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import CustomCardDesigner from '../components/CustomCardDesigner';
@@ -18,6 +18,7 @@ const ProductDetails: React.FC = () => {
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(true);
   const [added, setAdded] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(false);
 
   // Delivery Scheduler
   const [deliveryDate, setDeliveryDate] = useState('');
@@ -42,6 +43,12 @@ const ProductDetails: React.FC = () => {
   const [reviewComment, setReviewComment] = useState('');
   const [reviewPhoto, setReviewPhoto] = useState('');
   const [reviewMsg, setReviewMsg] = useState('');
+
+  const handleShareProduct = () => {
+    navigator.clipboard.writeText(window.location.href);
+    setCopiedLink(true);
+    setTimeout(() => setCopiedLink(false), 2000);
+  };
 
   const loadData = async () => {
     setLoading(true);
@@ -352,6 +359,14 @@ const ProductDetails: React.FC = () => {
                 <span>Email Enquiry</span>
               </a>
             </div>
+            
+            <button
+              onClick={handleShareProduct}
+              className="w-full flex items-center justify-center space-x-2 py-3 border border-luxury-gold/40 hover:bg-luxury-gold/5 text-luxury-black-dark dark:text-luxury-gold rounded-lg text-xs uppercase font-bold tracking-widest transition-all"
+            >
+              {copiedLink ? <Check className="h-4 w-4 text-green-500" /> : <Share2 className="h-4 w-4" />}
+              <span>{copiedLink ? 'Link Copied!' : 'Share Product'}</span>
+            </button>
           </div>
 
         </div>

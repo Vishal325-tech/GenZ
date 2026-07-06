@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Film, Image as ImageIcon, Play, Eye } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
+import { Film, Image as ImageIcon, Play, Eye, Share2, Check } from 'lucide-react';
 import { MediaItem, getAssetUrl, INITIAL_MEDIA } from '../data/initialData';
 
 const STATIC_GALLERY: MediaItem[] = INITIAL_MEDIA;
@@ -10,6 +11,42 @@ const Gallery: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [previewVideo, setPreviewVideo] = useState('');
   const [previewImage, setPreviewImage] = useState('');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [copiedLink, setCopiedLink] = useState('');
+
+  useEffect(() => {
+    const v = searchParams.get('v');
+    const i = searchParams.get('i');
+    if (v) setPreviewVideo(v);
+    if (i) setPreviewImage(i);
+  }, [searchParams]);
+
+  const openVideo = (url: string) => {
+    setPreviewVideo(url);
+    setSearchParams({ v: url });
+  };
+  
+  const closeVideo = () => {
+    setPreviewVideo('');
+    setSearchParams({});
+  };
+
+  const openImage = (url: string) => {
+    setPreviewImage(url);
+    setSearchParams({ i: url });
+  };
+  
+  const closeImage = () => {
+    setPreviewImage('');
+    setSearchParams({});
+  };
+
+  const handleShare = (url: string, type: 'v' | 'i') => {
+    const shareUrl = `${window.location.origin}${import.meta.env.BASE_URL}gallery?${type}=${encodeURIComponent(url)}`;
+    navigator.clipboard.writeText(shareUrl);
+    setCopiedLink(url);
+    setTimeout(() => setCopiedLink(''), 2000);
+  };
 
   useEffect(() => {
     const fetchMedia = async () => {
@@ -81,18 +118,19 @@ const Gallery: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredMedia.map((item) => {
             const isVideo = item.mimetype.startsWith('video') || item.url.endsWith('.mp4');
+            const assetUrl = getAssetUrl(item.url);
 
             return (
-              <div
-                key={item._id}
-                className="group relative aspect-video rounded-xl overflow-hidden border border-luxury-gold/10 hover:border-luxury-gold shadow-md hover:shadow-gold-glow transition-all duration-300 bg-neutral-200"
+              <div 
+                key={item._id} 
+                className="relative group rounded-xl overflow-hidden cursor-pointer shadow-lg hover:shadow-xl transition-all"
+                onClick={() => isVideo ? openVideo(assetUrl) : openImage(assetUrl)}
               >
                 {isVideo ? (
                   <div className="w-full h-full relative bg-neutral-900 flex items-center justify-center">
                     <video src={item.url} className="w-full h-full object-cover" autoPlay muted loop playsInline />
                     <div className="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/20 transition-all duration-300">
                       <button
-                        onClick={() => setPreviewVideo(item.url)}
                         className="p-3.5 rounded-full bg-white/20 hover:bg-luxury-gold text-white hover:text-luxury-black transition-colors"
                       >
                         <Play className="h-6 w-6 fill-current" />
@@ -130,12 +168,25 @@ const Gallery: React.FC = () => {
       {previewVideo && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm">
           <div className="relative w-full max-w-4xl max-h-[85vh] bg-black rounded-2xl border border-luxury-gold/40 shadow-2xl flex items-center justify-center">
-            <button
-              onClick={() => setPreviewVideo('')}
-              className="absolute -top-3 -right-3 md:top-4 md:right-4 text-white hover:text-luxury-red z-10 p-2.5 rounded-full bg-neutral-900 shadow-xl border border-white/20 transition-all"
-            >
-              ✕
-            </button>
+            
+            {/* Action Buttons Container */}
+            <div className="absolute -top-3 -right-3 md:top-4 md:right-4 flex flex-col gap-2 z-10">
+              <button
+                onClick={closeVideo}
+                className="p-2.5 rounded-full bg-neutral-900 shadow-xl border border-white/20 text-white hover:text-luxury-red transition-all"
+                title="Close"
+              >
+                ✕
+              </button>
+              <button
+                onClick={() => handleShare(previewVideo, 'v')}
+                className="p-2.5 rounded-full bg-neutral-900 shadow-xl border border-white/20 text-white hover:text-luxury-gold transition-all"
+                title="Share Reel Link"
+              >
+                {copiedLink === previewVideo ? <Check className="h-5 w-5 text-green-500" /> : <Share2 className="h-5 w-5" />}
+              </button>
+            </div>
+
             <video src={previewVideo} controls autoPlay className="w-full h-full max-h-[85vh] object-contain rounded-2xl" />
           </div>
         </div>
@@ -143,12 +194,24 @@ const Gallery: React.FC = () => {
       {previewImage && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm">
           <div className="relative w-full max-w-4xl max-h-[85vh] bg-black rounded-2xl border border-luxury-gold/40 shadow-2xl flex items-center justify-center">
-            <button
-              onClick={() => setPreviewImage('')}
-              className="absolute -top-3 -right-3 md:top-4 md:right-4 text-white hover:text-luxury-red z-10 p-2.5 rounded-full bg-neutral-900 shadow-xl border border-white/20 transition-all"
-            >
-              ✕
-            </button>
+            
+            <div className="absolute -top-3 -right-3 md:top-4 md:right-4 flex flex-col gap-2 z-10">
+              <button
+                onClick={closeImage}
+                className="p-2.5 rounded-full bg-neutral-900 shadow-xl border border-white/20 text-white hover:text-luxury-red transition-all"
+                title="Close"
+              >
+                ✕
+              </button>
+              <button
+                onClick={() => handleShare(previewImage, 'i')}
+                className="p-2.5 rounded-full bg-neutral-900 shadow-xl border border-white/20 text-white hover:text-luxury-gold transition-all"
+                title="Share Image Link"
+              >
+                {copiedLink === previewImage ? <Check className="h-5 w-5 text-green-500" /> : <Share2 className="h-5 w-5" />}
+              </button>
+            </div>
+
             <img src={previewImage} alt="Preview" className="w-full h-full max-h-[85vh] object-contain rounded-2xl" />
           </div>
         </div>
