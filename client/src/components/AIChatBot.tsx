@@ -71,7 +71,9 @@ const AIChatBot: React.FC = () => {
       
       // Offline fallback logic: search INITIAL_PRODUCTS for keywords in user input
       const query = userText.trim().toLowerCase();
+      
       const greetings = ['hi', 'hello', 'hey', 'greetings', 'hi!', 'hello!'];
+      const conversational = ['yes', 'yeah', 'yep', 'ok', 'okay', 'sure'];
       
       if (greetings.includes(query)) {
         setMessages(prev => [
@@ -86,15 +88,33 @@ const AIChatBot: React.FC = () => {
         return;
       }
 
+      if (conversational.includes(query)) {
+        setMessages(prev => [
+          ...prev,
+          {
+            id: `bot_fallback_${Date.now()}`,
+            sender: 'bot',
+            text: "Great! Tell me a bit more about what you're looking for, or mention an occasion like a Birthday or Anniversary.",
+            products: []
+          }
+        ]);
+        return;
+      }
+
+      // Handle common typos
+      let normalizedQuery = query;
+      if (query.includes('birtday') || query.includes('bday')) normalizedQuery = 'birthday';
+      if (query.includes('aniversary') || query.includes('aniv')) normalizedQuery = 'anniversary';
+
       const matchedProducts = INITIAL_PRODUCTS.filter(p => 
-        p.name.toLowerCase().includes(query) || 
-        p.category.toLowerCase().includes(query) ||
-        p.description.toLowerCase().includes(query)
+        p.name.toLowerCase().includes(normalizedQuery) || 
+        p.category.toLowerCase().includes(normalizedQuery) ||
+        p.description.toLowerCase().includes(normalizedQuery)
       ).slice(0, 3);
 
       let fallbackText = "I found some exquisite luxury gifts that might be perfect for you!";
       if (matchedProducts.length === 0) {
-        fallbackText = "I'm having trouble connecting to my live luxury database right now. Could you try checking our Shop page directly for the perfect gift?";
+        fallbackText = "I couldn't find an exact match for that! We specialize in ultra-premium Birthday, Anniversary, and Wedding hampers. Could you try searching for one of those, or check our Shop page directly?";
       }
 
       setMessages(prev => [
