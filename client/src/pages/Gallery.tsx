@@ -7,7 +7,13 @@ import {
 import { MediaItem, getAssetUrl, INITIAL_MEDIA } from '../data/initialData';
 
 const STATIC_GALLERY: MediaItem[] = INITIAL_MEDIA;
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const getApiBase = () => {
+  const url = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+  if (url.endsWith('/api')) return url;
+  if (url.endsWith('/api/')) return url.slice(0, -1);
+  return `${url}/api`;
+};
+const API_BASE = getApiBase();
 
 const occasionEmoji: Record<string, string> = {
   Birthday: '🎂', Anniversary: '💍', Wedding: '💒', Proposal: '💍',

@@ -9,7 +9,13 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const getApiBase = () => {
+  const url = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+  if (url.endsWith('/api')) return url;
+  if (url.endsWith('/api/')) return url.slice(0, -1);
+  return `${url}/api`;
+};
+const API_BASE = getApiBase();
 
 interface StoryData {
   _id: string;

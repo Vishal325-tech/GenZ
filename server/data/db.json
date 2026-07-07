@@ -577,8 +577,8 @@
       "showSocialMedia": true,
       "photos": [],
       "videos": [],
-      "coverPhoto": "https://res.cloudinary.com/jhu684wx/image/upload/v1783444083/genz_royal_hampers/stories/pending/f3k93ehuxenoseeidqfw.png",
-      "thumbnail": "https://res.cloudinary.com/jhu684wx/image/upload/v1783444085/genz_royal_hampers/stories/pending/kxvh29tle6ll56jy6oox.png",
+      "coverPhoto": "https://res.cloudinary.com/jhu684wx/image/upload/v1783444083/genz_royal_hampers/stories/approved/f3k93ehuxenoseeidqfw.png",
+      "thumbnail": "https://res.cloudinary.com/jhu684wx/image/upload/v1783444085/genz_royal_hampers/stories/approved/kxvh29tle6ll56jy6oox.png",
       "aiWishes": "🌹 Happy Valentine's Day! Love is the most beautiful gift, and I'm grateful to share it with you. 💖",
       "aiHashtags": [
         "#ValentinesDay",
@@ -594,15 +594,16 @@
         "Personalised Keepsake Gift",
         "Grand Celebration Hamper"
       ],
-      "status": "pending",
+      "status": "published",
       "_id": "story_s1epbn4tl",
       "reactions": [],
       "comments": [],
       "viewCount": 0,
       "shareCount": 0,
       "createdAt": "2026-07-07T17:08:16.861Z",
-      "updatedAt": "2026-07-07T17:08:16.861Z",
-      "expiresAt": "2026-07-08T17:09:00.000Z"
+      "updatedAt": "2026-07-07T18:54:25.629Z",
+      "expiresAt": "2026-07-08T17:09:00.000Z",
+      "publishedAt": "2026-07-07T18:54:21.345Z"
     }
   ]
 }
