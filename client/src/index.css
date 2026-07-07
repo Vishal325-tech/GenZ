@@ -140,3 +140,139 @@
 .zoom-container:hover img {
   transform: scale(2.2);
 }
+
+/* ══════════════════════════════════════════════════
+   CELEBRATION STORIES CSS
+   ══════════════════════════════════════════════════ */
+
+/* Premium Story Ring Gradient */
+.story-ring {
+  background: conic-gradient(
+    from 0deg,
+    #D4AF37 0%,
+    #B76E79 25%,
+    #6A0DAD 50%,
+    #B76E79 75%,
+    #D4AF37 100%
+  );
+  padding: 3px;
+  border-radius: 50%;
+}
+
+.story-ring-inner {
+  background: #FFF0F2;
+  border-radius: 50%;
+  padding: 2px;
+}
+
+/* Story Viewer Overlay */
+.story-overlay {
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.7) 0%,
+    transparent 30%,
+    transparent 60%,
+    rgba(0, 0, 0, 0.8) 100%
+  );
+}
+
+/* Story Glassmorphism Card */
+.story-glass {
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+.story-glass-dark {
+  background: rgba(10, 10, 10, 0.75);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(212, 175, 55, 0.15);
+}
+
+/* Floating Hearts Animation */
+@keyframes floatHeart {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotate(0deg);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translateY(-60px) scale(1.2) rotate(-10deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-140px) scale(0.6) rotate(15deg);
+  }
+}
+
+.float-heart {
+  animation: floatHeart 2s ease-out forwards;
+  pointer-events: none;
+  position: absolute;
+}
+
+/* Sparkle Particles */
+@keyframes sparkleFloat {
+  0% { opacity: 0; transform: scale(0) rotate(0deg) translateY(0); }
+  30% { opacity: 1; transform: scale(1) rotate(90deg) translateY(-10px); }
+  70% { opacity: 0.7; transform: scale(0.8) rotate(180deg) translateY(-30px); }
+  100% { opacity: 0; transform: scale(0) rotate(360deg) translateY(-60px); }
+}
+
+.sparkle-particle {
+  animation: sparkleFloat 2.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Luxury gradient text */
+.celebration-text-gradient {
+  background: linear-gradient(135deg, #D4AF37 0%, #B76E79 50%, #6A0DAD 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Premium button for stories */
+.btn-celebration {
+  background: linear-gradient(135deg, #B76E79 0%, #6A0DAD 100%);
+  color: #FAFAFA;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(106, 13, 173, 0.3);
+}
+
+.btn-celebration:hover {
+  background: linear-gradient(135deg, #D4AF37 0%, #B76E79 100%);
+  border-color: rgba(106, 13, 173, 0.4);
+  box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+  transform: translateY(-2px);
+}
+
+/* Story scrollbar (horizontal) */
+.story-scrollbar::-webkit-scrollbar {
+  height: 4px;
+}
+.story-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.story-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #D4AF37, #B76E79);
+  border-radius: 2px;
+}
+
+/* Occasion Badge */
+.occasion-badge {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.9) 0%, rgba(183, 110, 121, 0.9) 100%);
+  color: white;
+  font-size: 0.65rem;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+

@@ -16,6 +16,8 @@ import couponRoutes from './routes/couponRoutes.js';
 import messageRoutes from './routes/messageRoutes.js';
 import mediaRoutes from './routes/mediaRoutes.js';
 import aiRoutes from './routes/aiRoutes.js';
+import storyRoutes from './routes/storyRoutes.js';
+import { runScheduler } from './controllers/storyController.js';
 
 dotenv.config();
 
@@ -45,6 +47,10 @@ app.use('/api/coupons', couponRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/media', mediaRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/stories', storyRoutes);
+
+// Serve story uploads
+app.use('/uploads/stories', express.static(path.join(__dirname, 'uploads', 'stories')));
 
 // Health check
 app.get('/health', (req, res) => {
@@ -67,6 +73,10 @@ async function startServer() {
 
   app.listen(PORT, () => {
     console.log(`🚀 Gajanana Server floating on port ${PORT}`);
+    
+    // Story auto-publish & auto-expire scheduler (runs every 60s)
+    setInterval(runScheduler, 60 * 1000);
+    console.log('📅 Story scheduler started (60s interval)');
   });
 }
 

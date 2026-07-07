@@ -6,6 +6,8 @@ import { useAuth } from '../context/AuthContext';
 import ProductCard from '../components/ProductCard';
 import HeroSlider from '../components/HeroSlider';
 import Sidebar from '../components/Sidebar';
+import StoryBar from '../components/StoryBar';
+import StoryViewer from '../components/StoryViewer';
 import { useLanguage } from '../context/LanguageContext';
 import { Product, Category, MediaItem, getAssetUrl, INITIAL_CATEGORIES, INITIAL_PRODUCTS, INITIAL_MEDIA } from '../data/initialData';
 
@@ -20,6 +22,9 @@ const Home: React.FC = () => {
   const [previewVideo, setPreviewVideo] = useState('');
   const [copiedLink, setCopiedLink] = useState('');
   const [loading, setLoading] = useState(true);
+
+  // Story viewer state
+  const [storyViewerData, setStoryViewerData] = useState<{ stories: any[]; index: number } | null>(null);
   
   // Search state
   const [searchQuery, setSearchQuery] = useState('');
@@ -98,13 +103,28 @@ const Home: React.FC = () => {
       {/* Dynamic Auto-Sliding Hero Section */}
       <HeroSlider />
 
+      {/* ═══ Celebration Stories Bar ═══ */}
+      <StoryBar
+        onViewStory={(stories, index) => setStoryViewerData({ stories, index })}
+        onCreateStory={() => navigate('/stories/submit')}
+      />
+
+      {/* Story Viewer Overlay */}
+      {storyViewerData && (
+        <StoryViewer
+          stories={storyViewerData.stories}
+          initialIndex={storyViewerData.index}
+          onClose={() => setStoryViewerData(null)}
+        />
+      )}
+
       <div className="flex relative max-w-[100vw]">
         <Sidebar />
         
         <div className="flex-grow w-full min-w-0 relative flex flex-col">
           {/* Brand Value Propositions */}
           <section className="bg-white dark:bg-luxury-black-soft py-10 border-b border-luxury-gold/10">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="w-full px-4 sm:px-6 lg:px-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
               <div className="flex items-center space-x-3.5 p-4">
                 <Award className="h-9 w-9 text-luxury-gold shrink-0" />
                 <div>
@@ -137,7 +157,7 @@ const Home: React.FC = () => {
           </section>
 
           {/* Occasion Categories Grid Section */}
-          <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <section className="w-full px-4 sm:px-6 lg:px-8 py-16">
             <div className="text-center space-y-2 mb-12">
               <span className="text-xs font-bold uppercase tracking-widest text-luxury-gold">Browse by occasion</span>
               <h2 className="font-serif text-2xl sm:text-3xl font-bold text-luxury-black-dark dark:text-white">
@@ -179,7 +199,7 @@ const Home: React.FC = () => {
           {/* Featured Hampers Section */}
           {featured.length > 0 && (
             <section className="bg-luxury-cream-dark/20 py-16 border-t border-b border-luxury-gold/10">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="w-full px-4 sm:px-6 lg:px-8">
                 <div className="text-center space-y-2 mb-12">
                   <span className="text-xs font-bold uppercase tracking-widest text-luxury-gold">Signature Selection</span>
                   <h2 className="font-serif text-2xl sm:text-3xl font-bold text-luxury-black-dark dark:text-white">Featured Gift Hampers</h2>
@@ -195,7 +215,7 @@ const Home: React.FC = () => {
           {/* Best Sellers Section */}
           {bestSellers.length > 0 && (
             <section className="py-16">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="w-full px-4 sm:px-6 lg:px-8">
                 <div className="text-center space-y-2 mb-12">
                   <span className="text-xs font-bold uppercase tracking-widest text-luxury-gold">Popular Choices</span>
                   <h2 className="font-serif text-2xl sm:text-3xl font-bold text-luxury-black-dark dark:text-white">Best Sellers</h2>
@@ -211,7 +231,7 @@ const Home: React.FC = () => {
           {/* Trending Gifts Section */}
           {trending.length > 0 && (
             <section className="bg-luxury-cream-dark/20 py-16 border-t border-b border-luxury-gold/10">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="w-full px-4 sm:px-6 lg:px-8">
                 <div className="text-center space-y-2 mb-12">
                   <span className="text-xs font-bold uppercase tracking-widest text-luxury-gold">Highly Curated</span>
                   <h2 className="font-serif text-2xl sm:text-3xl font-bold text-luxury-black-dark dark:text-white">Trending Gifts</h2>
@@ -227,7 +247,7 @@ const Home: React.FC = () => {
           {/* Teddy Bears Section */}
           {teddyBears.length > 0 && (
             <section className="py-16">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="w-full px-4 sm:px-6 lg:px-8">
                 <div className="text-center space-y-2 mb-12">
                   <span className="text-xs font-bold uppercase tracking-widest text-luxury-gold">Plush & Soft</span>
                   <h2 className="font-serif text-2xl sm:text-3xl font-bold text-luxury-black-dark dark:text-white">Teddy Bears</h2>
@@ -243,7 +263,7 @@ const Home: React.FC = () => {
           {/* Flowers Section */}
           {flowers.length > 0 && (
             <section className="bg-luxury-cream-dark/20 py-16 border-t border-b border-luxury-gold/10">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="w-full px-4 sm:px-6 lg:px-8">
                 <div className="text-center space-y-2 mb-12">
                   <span className="text-xs font-bold uppercase tracking-widest text-luxury-gold">Fresh Blooms</span>
                   <h2 className="font-serif text-2xl sm:text-3xl font-bold text-luxury-black-dark dark:text-white">Fresh Flowers</h2>
@@ -259,7 +279,7 @@ const Home: React.FC = () => {
           {/* Chocolates Section */}
           {chocolates.length > 0 && (
             <section className="py-16">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="w-full px-4 sm:px-6 lg:px-8">
                 <div className="text-center space-y-2 mb-12">
                   <span className="text-xs font-bold uppercase tracking-widest text-luxury-gold">Artisanal Sweets</span>
                   <h2 className="font-serif text-2xl sm:text-3xl font-bold text-luxury-black-dark dark:text-white">Luxury Chocolates</h2>
@@ -275,7 +295,7 @@ const Home: React.FC = () => {
           {/* Cakes Section */}
           {cakes.length > 0 && (
             <section className="bg-luxury-cream-dark/20 py-16 border-t border-b border-luxury-gold/10">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="w-full px-4 sm:px-6 lg:px-8">
                 <div className="text-center space-y-2 mb-12">
                   <span className="text-xs font-bold uppercase tracking-widest text-luxury-gold">Royal Celebrations</span>
                   <h2 className="font-serif text-2xl sm:text-3xl font-bold text-luxury-black-dark dark:text-white">Gourmet Cakes</h2>
@@ -291,7 +311,7 @@ const Home: React.FC = () => {
           {/* Luxury Hampers Section */}
           {luxuryHampers.length > 0 && (
             <section className="py-16">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="w-full px-4 sm:px-6 lg:px-8">
                 <div className="text-center space-y-2 mb-12">
                   <span className="text-xs font-bold uppercase tracking-widest text-luxury-gold">Signature Hampers</span>
                   <h2 className="font-serif text-2xl sm:text-3xl font-bold text-luxury-black-dark dark:text-white">Luxury Gift Hampers</h2>
@@ -304,9 +324,12 @@ const Home: React.FC = () => {
             </section>
           )}
 
-          {/* Live Customer Happiness Reels Section */}
+        </div>
+      </div>
+
+      {/* Live Customer Happiness Reels Section */}
           <section className="bg-white dark:bg-luxury-black-dark py-16 border-t border-b border-luxury-gold/10">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+            <div className="w-full px-4 sm:px-6 lg:px-8 space-y-12">
               
               <div className="text-center space-y-2">
                 <span className="text-xs font-bold uppercase tracking-widest text-luxury-gold">Real Celebrations, Real Joy</span>
@@ -387,7 +410,7 @@ const Home: React.FC = () => {
           </section>
 
           {/* Luxury Customer Testimonials */}
-          <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <section className="w-full px-4 sm:px-6 lg:px-8 py-16">
             <div className="text-center space-y-2 mb-12">
               <span className="text-xs font-bold uppercase tracking-widest text-luxury-gold">Delighted Customer Notes</span>
               <h2 className="font-serif text-2xl font-bold text-luxury-black-dark dark:text-white">Customer Reviews</h2>
@@ -435,8 +458,6 @@ const Home: React.FC = () => {
               </div>
             </div>
           </section>
-        </div>
-      </div>
 
       {/* Video Preview Modal */}
       {previewVideo && (

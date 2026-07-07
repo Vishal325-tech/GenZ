@@ -176,6 +176,15 @@ const Navbar: React.FC = () => {
               {theme === 'light' ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
             </button>
 
+            {/* Home for Mobile/Tablet */}
+            <Link
+              to="/"
+              className="lg:hidden p-1.5 sm:p-2 rounded-full hover:bg-luxury-cream-dark dark:hover:bg-luxury-black-soft text-luxury-gold shrink-0"
+              title="Home"
+            >
+              <HomeIcon className="h-5 w-5" />
+            </Link>
+
             {/* Wishlist */}
             <Link
               to="/account?tab=wishlist"

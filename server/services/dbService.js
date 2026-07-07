@@ -7,6 +7,7 @@ import Category from '../models/Category.js';
 import Order from '../models/Order.js';
 import Coupon from '../models/Coupon.js';
 import Message from '../models/Message.js';
+import Story from '../models/Story.js';
 import { checkMongoConnected } from '../config/db.js';
 
 const LOCAL_DB_PATH = path.resolve('data/db.json');
@@ -774,6 +775,110 @@ export const dbService = {
     db.media = db.media.filter(m => m._id !== id);
     writeLocalDb(db);
     return db.media.length < initialLen;
+  },
+
+  // ==================== CELEBRATION STORIES ====================
+  async findStories(filter = {}) {
+    if (checkMongoConnected()) {
+      return await Story.find(filter);
+    } else {
+      const db = readLocalDb();
+      if (!db.stories) db.stories = [];
+      let list = [...db.stories];
+      
+      if (filter.status) {
+        if (typeof filter.status === 'object' && filter.status.$in) {
+          list = list.filter(s => filter.status.$in.includes(s.status));
+        } else {
+          list = list.filter(s => s.status === filter.status);
+        }
+      }
+      if (filter.occasion) {
+        list = list.filter(s => s.occasion === filter.occasion);
+      }
+      if (filter.isFeatured !== undefined) {
+        list = list.filter(s => s.isFeatured === filter.isFeatured);
+      }
+      return list;
+    }
+  },
+
+  async findStoryById(id) {
+    if (checkMongoConnected()) {
+      return await Story.findById(id);
+    } else {
+      const db = readLocalDb();
+      if (!db.stories) db.stories = [];
+      return db.stories.find(s => s._id === id);
+    }
+  },
+
+  async createStory(storyData) {
+    if (checkMongoConnected()) {
+      const newStory = new Story(storyData);
+      return await newStory.save();
+    } else {
+      const db = readLocalDb();
+      if (!db.stories) db.stories = [];
+      
+      const newStory = {
+        ...storyData,
+        _id: `story_${Math.random().toString(36).substr(2, 9)}`,
+        status: storyData.status || 'pending',
+        reactions: [],
+        comments: [],
+        viewCount: 0,
+        shareCount: 0,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      
+      // Auto-compute expiresAt if publishTime is set
+      if (newStory.publishTime && !newStory.expiresAt) {
+        const durationMap = { '24h': 24, '48h': 48, '3d': 72, '7d': 168 };
+        const hours = newStory.storyDuration === 'custom'
+          ? (newStory.customDurationHours || 24)
+          : (durationMap[newStory.storyDuration] || 24);
+        newStory.expiresAt = new Date(new Date(newStory.publishTime).getTime() + hours * 60 * 60 * 1000).toISOString();
+      }
+
+      db.stories.push(newStory);
+      writeLocalDb(db);
+      return newStory;
+    }
+  },
+
+  async updateStory(id, updateData) {
+    if (checkMongoConnected()) {
+      return await Story.findByIdAndUpdate(id, updateData, { new: true });
+    } else {
+      const db = readLocalDb();
+      if (!db.stories) db.stories = [];
+      const idx = db.stories.findIndex(s => s._id === id);
+      if (idx === -1) return null;
+      
+      db.stories[idx] = { 
+        ...db.stories[idx], 
+        ...updateData, 
+        updatedAt: new Date().toISOString() 
+      };
+      
+      writeLocalDb(db);
+      return db.stories[idx];
+    }
+  },
+
+  async deleteStory(id) {
+    if (checkMongoConnected()) {
+      return await Story.findByIdAndDelete(id);
+    } else {
+      const db = readLocalDb();
+      if (!db.stories) db.stories = [];
+      const initialLen = db.stories.length;
+      db.stories = db.stories.filter(s => s._id !== id);
+      writeLocalDb(db);
+      return db.stories.length < initialLen;
+    }
   }
 };
 export default dbService;

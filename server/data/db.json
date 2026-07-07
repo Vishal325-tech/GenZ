@@ -348,6 +348,47 @@
       "notifications": [],
       "createdAt": "2026-07-04T16:02:38.835Z",
       "updatedAt": "2026-07-04T16:02:38.835Z"
+    },
+    {
+      "name": "google.customer",
+      "email": "google.customer@royalhampers.com",
+      "password": "$2a$10$opEu2qO4bW7bH83UOiY7k./fCKeH0RXuiSSYhzp8U7a4chm5mWWuS",
+      "role": "customer",
+      "_id": "user_wnnt7ryak",
+      "addressBook": [],
+      "wishlist": [],
+      "savedCards": [],
+      "notifications": [],
+      "createdAt": "2026-07-07T16:30:26.737Z",
+      "updatedAt": "2026-07-07T16:30:26.737Z"
+    },
+    {
+      "name": "Admin",
+      "email": "admin@genz.com",
+      "password": "$2a$10$8pZkLhunIM1tKd/6kR7ke.pIjdoPPUBY.4gNRPXphpcJNXp3YTegu",
+      "phone": "9999999999",
+      "role": "customer",
+      "_id": "user_nxula94js",
+      "addressBook": [],
+      "wishlist": [],
+      "savedCards": [],
+      "notifications": [],
+      "createdAt": "2026-07-07T17:23:18.929Z",
+      "updatedAt": "2026-07-07T17:23:18.929Z"
+    },
+    {
+      "name": "Admin User",
+      "email": "admin2@genz.com",
+      "password": "$2a$10$Tk.cJcCt/G3Ql4kKHm1fzODMjMQL0QRVCkyBsdYCPZ/UmYETyLONe",
+      "phone": "9999999998",
+      "role": "customer",
+      "_id": "user_9hswthlib",
+      "addressBook": [],
+      "wishlist": [],
+      "savedCards": [],
+      "notifications": [],
+      "createdAt": "2026-07-07T17:23:34.779Z",
+      "updatedAt": "2026-07-07T17:23:34.781Z"
     }
   ],
   "orders": [],
@@ -496,6 +537,72 @@
       "url": "http://localhost:5000/uploads/whatsapp-video-2026-06-23-at-7-01-53-pm.mp4",
       "_id": "med_e2tvu4gde",
       "createdAt": "2026-06-25T16:27:42.300Z"
+    }
+  ],
+  "stories": [
+    {
+      "customerName": "GenZ",
+      "email": "vishalsh325@gmail.com",
+      "mobile": "9108531238",
+      "city": "Banglore",
+      "state": "Karnataka",
+      "country": "India",
+      "occasion": "Valentine's Day",
+      "customOccasion": "",
+      "title": "GenZ",
+      "caption": "Valantains celebration",
+      "personalMessage": "SUPER DAY",
+      "giftMessage": "Thank you GenZ Team",
+      "hashtags": [
+        "#Valantains Day"
+      ],
+      "celebrationDate": "2026-07-07",
+      "publishTime": "2026-07-07T22:39",
+      "storyDuration": "24h",
+      "customDurationHours": 24,
+      "visibility": "public",
+      "hideComments": false,
+      "allowSharing": true,
+      "backgroundMusic": "celebration",
+      "customMusicUrl": "",
+      "brideName": "",
+      "groomName": "",
+      "socialMedia": {
+        "instagram": "@genz.hampers",
+        "facebook": "",
+        "youtube": "",
+        "website": "",
+        "linkedin": ""
+      },
+      "showSocialMedia": true,
+      "photos": [],
+      "videos": [],
+      "coverPhoto": "https://res.cloudinary.com/jhu684wx/image/upload/v1783444083/genz_royal_hampers/stories/pending/f3k93ehuxenoseeidqfw.png",
+      "thumbnail": "https://res.cloudinary.com/jhu684wx/image/upload/v1783444085/genz_royal_hampers/stories/pending/kxvh29tle6ll56jy6oox.png",
+      "aiWishes": "🌹 Happy Valentine's Day! Love is the most beautiful gift, and I'm grateful to share it with you. 💖",
+      "aiHashtags": [
+        "#ValentinesDay",
+        "#LoveDay",
+        "#ForeverLove",
+        "#BeMyValentine",
+        "#GENZRoyalHampers"
+      ],
+      "aiGiftSuggestions": [
+        "Premium Gift Hamper",
+        "Luxury Celebration Box",
+        "Royal Festive Basket",
+        "Personalised Keepsake Gift",
+        "Grand Celebration Hamper"
+      ],
+      "status": "pending",
+      "_id": "story_s1epbn4tl",
+      "reactions": [],
+      "comments": [],
+      "viewCount": 0,
+      "shareCount": 0,
+      "createdAt": "2026-07-07T17:08:16.861Z",
+      "updatedAt": "2026-07-07T17:08:16.861Z",
+      "expiresAt": "2026-07-08T17:09:00.000Z"
     }
   ]
 }

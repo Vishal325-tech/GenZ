@@ -7,24 +7,13 @@ import { protect, authorize } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-const UPLOAD_DIR = path.resolve('uploads');
-if (!fs.existsSync(UPLOAD_DIR)) {
-  fs.mkdirSync(UPLOAD_DIR, { recursive: true });
-}
+import { uploadToCloudinary } from '../services/cloudinaryService.js';
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, UPLOAD_DIR);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-  }
-});
+const storage = multer.memoryStorage();
 
 const upload = multer({
   storage,
-  limits: { fileSize: 50 * 1024 * 1024 } // 50MB limit to support gift videos
+  limits: { fileSize: 50 * 1024 * 1024 } // 50MB limit
 });
 
 router.get('/', async (req, res) => {
@@ -42,16 +31,14 @@ router.post('/upload', protect, authorize('admin', 'editor', 'manager'), upload.
       return res.status(400).json({ message: 'No file uploaded.' });
     }
 
-    const host = req.get('host');
-    const protocol = req.protocol;
-    const fileUrl = `${protocol}://${host}/uploads/${req.file.filename}`;
+    const result = await uploadToCloudinary(req.file.buffer, req.file.mimetype, req.file.originalname);
 
     const mediaItem = await dbService.addMedia({
       name: req.file.originalname,
-      filename: req.file.filename,
+      filename: result.publicId,
       mimetype: req.file.mimetype,
       size: req.file.size,
-      url: fileUrl
+      url: result.url
     });
 
     res.status(201).json(mediaItem);
@@ -68,10 +55,13 @@ router.delete('/:id', protect, authorize('admin', 'editor', 'manager'), async (r
       return res.status(404).json({ message: 'Media item not found.' });
     }
 
-    // Delete from disk
-    const filePath = path.join(UPLOAD_DIR, item.filename);
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
+    // Safely delete from local disk if it exists (for backward compatibility)
+    if (item.filename) {
+      const UPLOAD_DIR = path.resolve('uploads');
+      const filePath = path.join(UPLOAD_DIR, item.filename);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
     }
 
     // Delete from DB

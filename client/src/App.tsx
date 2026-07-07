@@ -22,12 +22,16 @@ import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import TrackOrder from './pages/TrackOrder';
 import Account from './pages/Account';
+import Login from './pages/Login';
 
 import Blogs from './pages/Blogs';
 import Gallery from './pages/Gallery';
 import AdminDashboard from './pages/AdminDashboard';
 import OccasionPage from './pages/OccasionPage';
 import DeliveryDashboard from './pages/DeliveryDashboard';
+import SubmitStory from './pages/SubmitStory';
+import StoryArchive from './pages/StoryArchive';
+import AdminStoryDashboard from './pages/AdminStoryDashboard';
 
 // Helper component to conditionally hide nav/footer on admin/delivery pages and enforce login
 const LayoutWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -98,11 +102,15 @@ const App: React.FC = () => {
                     <Route path="/blogs" element={<Blogs />} />
                     <Route path="/gallery" element={<Gallery />} />
                     <Route path="/admin" element={<AdminDashboard />} />
+                    <Route path="/admin/stories" element={<AdminStoryDashboard />} />
                     <Route path="/occasion/:occasionName" element={<OccasionPage />} />
                     <Route path="/delivery" element={<DeliveryDashboard />} />
+                    <Route path="/stories/submit" element={<SubmitStory />} />
+                    <Route path="/stories/archive" element={<StoryArchive />} />
+                    <Route path="/stories" element={<StoryArchive />} />
                     
                     {/* Redirect login and all unknown routes to home */}
-                    <Route path="/login" element={<Navigate to="/" replace />} />
+                    <Route path="/login" element={<Login />} />
                     <Route path="*" element={<Navigate to="/" replace />} />
                   </Routes>
                 </LayoutWrapper>
