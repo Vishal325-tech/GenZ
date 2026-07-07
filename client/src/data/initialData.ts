@@ -38,6 +38,7 @@ export interface MediaItem {
   mimetype: string;
   category?: string;
   createdAt?: string;
+  story?: any;
 }
 
 // Utility to convert image paths so they work both locally and on GitHub Pages (/GenZ/...)
