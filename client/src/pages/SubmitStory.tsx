@@ -87,7 +87,7 @@ const ImageEditorModal: React.FC<ImageEditorModalProps> = ({ file, defaultAspect
   // Load file into image object
   useEffect(() => {
     const url = URL.createObjectURL(file);
-    const img = new Image();
+    const img = new window.Image();
     img.src = url;
     img.onload = () => {
       imgRef.current = img;
