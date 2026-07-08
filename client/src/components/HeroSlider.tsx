@@ -29,7 +29,7 @@ const DEFAULT_SLIDES = [
     theme: 'green',
     bgClass: 'bg-gradient-to-br from-emerald-100 via-green-50 to-emerald-200 dark:from-[#0d2a1d] dark:via-[#091f15] dark:to-[#04120a]',
     title: 'Fresh & Classy Botanical Gifts',
-    description: 'Breathe life into your celebrations with our lush botanical hampers, fresh exotic flowers, and organic luxury treats handpicked with love.',
+    description: 'Breathe life into your celebrations with our luxury botanical hampers, fresh exotic flowers, and organic luxury treats handpicked with love.',
     image: 'uploads/whatsapp-image-2026-06-23-at-7-01-33-pm.jpeg',
     ctaPrimary: 'EXPLORE FLOWERS',
     ctaSecondary: 'GIFT COMBOS'
@@ -87,8 +87,6 @@ const HeroSlider: React.FC = () => {
   useEffect(() => {
     const fetchHeroImages = async () => {
       try {
-        // Use full URL if API_URL is needed, but we can assume proxy or absolute path. 
-        // Vite proxy usually covers /api, but let's be safe.
         const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
         const url = apiUrl.endsWith('/api') ? apiUrl.replace('/api', '/api/ui/images/genz_ui_hero') : `${apiUrl}/ui/images/genz_ui_hero`;
         
@@ -97,7 +95,6 @@ const HeroSlider: React.FC = () => {
           const data = await res.json();
           if (data.success && data.images && data.images.length > 0) {
             setSlides(prev => prev.map((slide, index) => {
-              // Map Cloudinary images to slides, fallback to default if not enough images
               if (data.images[index]) {
                 return { ...slide, image: data.images[index].url };
               }
@@ -137,25 +134,19 @@ const HeroSlider: React.FC = () => {
       onMouseLeave={() => setIsHovered(false)}
     >
       
-      {/* Dynamic Background */}
       <div className={`absolute inset-0 ${slide.bgClass} transition-colors duration-1000`} />
 
-      {/* Optional Theme Overlays for Depth */}
       <div className="absolute inset-0 bg-black/5 dark:bg-black/30 pointer-events-none transition-colors duration-1000" />
 
-      {/* Main Content Area */}
       <div className="relative z-10 flex-grow flex flex-col items-center justify-center pt-2 pb-16 px-4 sm:px-6 lg:px-12 max-w-[1600px] mx-auto w-full">
         
-        {/* Top Tag */}
         <span className="inline-flex items-center space-x-1.5 px-4 py-1.5 rounded-full border border-luxury-gold/40 bg-luxury-gold/10 text-luxury-gold text-[10px] sm:text-xs uppercase font-bold tracking-widest animate-pulse mb-8">
           <Star className="h-3.5 w-3.5 fill-current" />
           <span>GENZ Royal Hampers • Royal Curation</span>
         </span>
 
-        {/* Dynamic Slide Content */}
         <div className="w-full flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
           
-          {/* Text & Search Area */}
           <div className="flex-1 text-center lg:text-left space-y-6 flex flex-col items-center lg:items-start transition-opacity duration-500" key={`text-${currentSlide}`}>
             
             <h1 className={`font-serif text-2xl sm:text-3xl lg:text-4xl xl:text-[2.75rem] font-extrabold leading-tight tracking-wide ${slide.theme === 'dark-gold' || slide.theme === 'navy' || slide.theme === 'purple' ? 'text-white' : 'text-luxury-black-dark dark:text-white'}`}>
@@ -166,7 +157,6 @@ const HeroSlider: React.FC = () => {
               {slide.description}
             </p>
 
-            {/* Search Bar */}
             <form onSubmit={handleSearch} className="w-full max-w-md relative mt-6">
               <input
                 type="text"
@@ -184,7 +174,6 @@ const HeroSlider: React.FC = () => {
               </button>
             </form>
 
-            {/* CTA Buttons */}
             <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-4">
               <button onClick={() => navigate('/shop')} className="bg-luxury-red hover:bg-luxury-red-dark text-white px-8 py-3.5 rounded-full text-xs sm:text-sm uppercase font-bold tracking-widest shadow-lg hover:shadow-red-glow transition-all flex items-center space-x-2">
                 <Package className="h-4 w-4" />
@@ -197,7 +186,6 @@ const HeroSlider: React.FC = () => {
             </div>
           </div>
 
-          {/* Image & Features Area */}
           <div className="flex-1 w-full max-w-lg xl:max-w-2xl relative flex flex-col items-center lg:items-end transition-opacity duration-500" key={`img-${currentSlide}`}>
             <div className="relative w-full aspect-[16/10] max-h-[380px] rounded-3xl overflow-hidden shadow-2xl border border-white/20 group">
               <img 
@@ -208,7 +196,6 @@ const HeroSlider: React.FC = () => {
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
             </div>
 
-            {/* Right Side Feature List */}
             <div className="absolute -right-4 lg:-right-8 top-1/2 -translate-y-1/2 hidden md:flex flex-col gap-3 z-20">
               {FEATURES.map((feature, idx) => (
                 <div key={idx} className="flex items-center gap-2 bg-white/90 dark:bg-black/80 backdrop-blur-md px-4 py-2.5 rounded-lg shadow-lg border border-luxury-gold/30">
@@ -222,7 +209,6 @@ const HeroSlider: React.FC = () => {
         </div>
       </div>
 
-      {/* Navigation Dots */}
       <div className="absolute bottom-[3.5rem] left-1/2 -translate-x-1/2 flex space-x-3 z-20">
         {slides.map((_, idx) => (
           <button
@@ -233,7 +219,6 @@ const HeroSlider: React.FC = () => {
         ))}
       </div>
 
-      {/* Bottom Category Slider */}
       <div className="absolute bottom-0 left-0 w-full z-20 bg-white/30 dark:bg-black/30 backdrop-blur-md border-t border-luxury-gold/20 py-3 overflow-x-auto hide-scrollbar">
         <div className="flex items-center gap-4 px-4 sm:px-6 lg:px-12 max-w-[1600px] mx-auto min-w-max">
           {CATEGORIES.map((cat, idx) => (
@@ -244,8 +229,6 @@ const HeroSlider: React.FC = () => {
           ))}
         </div>
       </div>
-
-
 
     </div>
   );
