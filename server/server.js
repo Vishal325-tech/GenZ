@@ -17,6 +17,9 @@ import messageRoutes from './routes/messageRoutes.js';
 import mediaRoutes from './routes/mediaRoutes.js';
 import aiRoutes from './routes/aiRoutes.js';
 import storyRoutes from './routes/storyRoutes.js';
+import adminAuthRoutes from './routes/adminAuthRoutes.js';
+import adminDashboardRoutes from './routes/adminDashboardRoutes.js';
+import uiRoutes from './routes/uiRoutes.js';
 import { runScheduler } from './controllers/storyController.js';
 
 dotenv.config();
@@ -48,6 +51,9 @@ app.use('/api/messages', messageRoutes);
 app.use('/api/media', mediaRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/stories', storyRoutes);
+app.use('/api/admin/auth', adminAuthRoutes);
+app.use('/api/admin/dashboard', adminDashboardRoutes);
+app.use('/api/ui', uiRoutes);
 
 // Serve story uploads
 app.use('/uploads/stories', express.static(path.join(__dirname, 'uploads', 'stories')));

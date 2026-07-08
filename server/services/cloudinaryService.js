@@ -200,3 +200,51 @@ export const deleteFromCloudinary = async (publicId, resourceType = 'image') => 
   }
 };
 
+/**
+ * Fetches all images from a specific Cloudinary folder.
+ * 
+ * @param {string} folderName - The Cloudinary folder to fetch images from.
+ * @returns {Promise<Array<{url: string, publicId: string, format: string, createdAt: string}>>}
+ */
+export const getAssetsByFolder = async (folderName) => {
+  const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+  const apiKey = process.env.CLOUDINARY_API_KEY;
+  const apiSecret = process.env.CLOUDINARY_API_SECRET;
+
+  if (!cloudName || !apiKey || !apiSecret) {
+    throw new Error('Cloudinary environment variables are missing in .env');
+  }
+
+  // Cloudinary Admin API uses Basic Auth
+  const authString = Buffer.from(`${apiKey}:${apiSecret}`).toString('base64');
+  const url = `https://api.cloudinary.com/v1_1/${cloudName}/resources/image/upload?prefix=${encodeURIComponent(folderName)}/&max_results=50`;
+
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Basic ${authString}`
+      }
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      console.error('Cloudinary Admin API Error Details:', result);
+      throw new Error(result.error?.message || 'Cloudinary fetch request failed.');
+    }
+
+    // Sort by created_at descending (newest first)
+    const sortedResources = result.resources.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+    return sortedResources.map(res => ({
+      url: res.secure_url,
+      publicId: res.public_id,
+      format: res.format,
+      createdAt: res.created_at
+    }));
+  } catch (error) {
+    console.error('Cloudinary getAssetsByFolder exception:', error);
+    throw error;
+  }
+};

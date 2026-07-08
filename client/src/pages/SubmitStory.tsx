@@ -7,6 +7,7 @@ import {
   ChevronDown, Eye, Trash2, AlertCircle, CheckCircle2, Play, Pause, Loader2
 } from 'lucide-react';
 import StoryViewer from '../components/StoryViewer';
+import { compressImage } from '../utils/imageCompression';
 
 const getApiBase = () => {
   const url = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
@@ -67,6 +68,268 @@ const occasionEmoji: Record<string, string> = {
   'Corporate Celebration': '🏢', Festival: '🎊', 'Custom Occasion': '🌟'
 };
 
+interface ImageEditorModalProps {
+  file: File;
+  defaultAspect: '1:1' | '9:16' | '16:9' | 'free';
+  onClose: () => void;
+  onSave: (editedFile: File) => void;
+}
+
+const ImageEditorModal: React.FC<ImageEditorModalProps> = ({ file, defaultAspect, onClose, onSave }) => {
+  const [aspectRatio, setAspectRatio] = useState(defaultAspect);
+  const [zoom, setZoom] = useState(1);
+  const [panX, setPanX] = useState(0);
+  const [panY, setPanY] = useState(0);
+  const [filterType, setFilterType] = useState('none');
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const imgRef = useRef<HTMLImageElement | null>(null);
+
+  // Load file into image object
+  useEffect(() => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.src = url;
+    img.onload = () => {
+      imgRef.current = img;
+      drawPreview();
+    };
+    return () => URL.revokeObjectURL(url);
+  }, [file]);
+
+  const getCanvasFilter = (filter: string) => {
+    switch (filter) {
+      case 'warm': return 'sepia(25%) saturate(130%) contrast(105%)';
+      case 'cool': return 'contrast(105%) brightness(100%) hue-rotate(15deg) saturate(110%)';
+      case 'grayscale': return 'grayscale(100%)';
+      case 'sepia': return 'sepia(100%)';
+      case 'vintage': return 'sepia(35%) contrast(135%) saturate(85%) brightness(95%)';
+      case 'brighten': return 'brightness(125%) contrast(105%)';
+      case 'vivid': return 'saturate(165%) contrast(110%)';
+      default: return 'none';
+    }
+  };
+
+  // Redraw canvas preview
+  const drawPreview = useCallback(() => {
+    const canvas = canvasRef.current;
+    const img = imgRef.current;
+    if (!canvas || !img) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Set canvas dimensions based on aspect ratio preset
+    let outWidth = 500;
+    let outHeight = 500;
+    if (aspectRatio === '9:16') {
+      outWidth = 450;
+      outHeight = 800;
+    } else if (aspectRatio === '16:9') {
+      outWidth = 800;
+      outHeight = 450;
+    } else if (aspectRatio === 'free') {
+      // Fit to image's aspect ratio
+      const imgAspect = img.width / img.height;
+      if (imgAspect > 1) {
+        outWidth = 600;
+        outHeight = 600 / imgAspect;
+      } else {
+        outHeight = 600;
+        outWidth = 600 * imgAspect;
+      }
+    }
+
+    canvas.width = outWidth;
+    canvas.height = outHeight;
+
+    ctx.clearRect(0, 0, outWidth, outHeight);
+
+    // Apply Filter
+    ctx.filter = getCanvasFilter(filterType);
+
+    // Target Aspect
+    const targetAspect = outWidth / outHeight;
+    let sWidth = img.width;
+    let sHeight = img.height;
+
+    if (img.width / img.height > targetAspect) {
+      sWidth = img.height * targetAspect;
+    } else {
+      sHeight = img.width / targetAspect;
+    }
+
+    // Apply zoom
+    sWidth = sWidth / zoom;
+    sHeight = sHeight / zoom;
+
+    // Pan max delta
+    const maxDeltaX = (img.width - sWidth) / 2;
+    const maxDeltaY = (img.height - sHeight) / 2;
+
+    const offsetX = ((img.width - sWidth) / 2) + (panX / 100) * maxDeltaX;
+    const offsetY = ((img.height - sHeight) / 2) + (panY / 100) * maxDeltaY;
+
+    ctx.drawImage(img, offsetX, offsetY, sWidth, sHeight, 0, 0, outWidth, outHeight);
+  }, [aspectRatio, zoom, panX, panY, filterType]);
+
+  useEffect(() => {
+    drawPreview();
+  }, [drawPreview, aspectRatio, zoom, panX, panY, filterType]);
+
+  const handleSave = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    canvas.toBlob((blob) => {
+      if (blob) {
+        const editedFile = new File([blob], file.name, { type: 'image/jpeg' });
+        onSave(editedFile);
+      }
+    }, 'image/jpeg', 0.9);
+  };
+
+  const FILTERS = [
+    { value: 'none', label: 'Original' },
+    { value: 'warm', label: 'Warm' },
+    { value: 'cool', label: 'Cool' },
+    { value: 'grayscale', label: 'Grayscale' },
+    { value: 'sepia', label: 'Sepia' },
+    { value: 'vintage', label: 'Vintage' },
+    { value: 'brighten', label: 'Brighten' },
+    { value: 'vivid', label: 'Vivid' },
+  ];
+
+  return (
+    <div className="fixed inset-0 z-[150] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+      <div className="max-w-lg w-full bg-white dark:bg-neutral-900 rounded-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
+        {/* Header */}
+        <div className="p-4 border-b border-neutral-100 dark:border-neutral-800 flex justify-between items-center">
+          <h3 className="font-serif font-bold text-neutral-800 dark:text-neutral-200">Edit & Filter Photo</h3>
+          <button onClick={onClose} className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Editor body */}
+        <div className="p-4 overflow-y-auto space-y-4 flex-1">
+          {/* Preview canvas */}
+          <div className="flex justify-center bg-neutral-100 dark:bg-neutral-950 p-4 rounded-xl max-h-[300px] overflow-hidden items-center relative">
+            <canvas ref={canvasRef} className="max-w-full max-h-[260px] object-contain shadow rounded border border-neutral-200 dark:border-neutral-800" />
+          </div>
+
+          {/* Aspect ratios */}
+          <div className="space-y-1.5">
+            <label className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider">Aspect Ratio</label>
+            <div className="flex flex-wrap gap-2">
+              {[
+                { val: 'free', label: 'Free' },
+                { val: '1:1', label: 'Square (1:1)' },
+                { val: '9:16', label: 'Story (9:16)' },
+                { val: '16:9', label: 'Landscape' }
+              ].map(a => (
+                <button
+                  key={a.val}
+                  type="button"
+                  onClick={() => { setAspectRatio(a.val as any); setZoom(1); setPanX(0); setPanY(0); }}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
+                    aspectRatio === a.val
+                      ? 'border-luxury-gold bg-luxury-gold/10 text-luxury-gold'
+                      : 'border-neutral-200 dark:border-neutral-800 text-neutral-600 dark:text-neutral-400'
+                  }`}
+                >
+                  {a.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Zoom slider */}
+          <div className="space-y-1">
+            <div className="flex justify-between text-xs text-neutral-500 font-bold">
+              <span>Zoom</span>
+              <span>{zoom.toFixed(1)}x</span>
+            </div>
+            <input
+              type="range"
+              min="1"
+              max="4"
+              step="0.1"
+              value={zoom}
+              onChange={e => setZoom(parseFloat(e.target.value))}
+              className="w-full h-1 bg-neutral-200 dark:bg-neutral-800 rounded-lg appearance-none cursor-pointer accent-luxury-gold"
+            />
+          </div>
+
+          {/* Pan X and Y sliders */}
+          {zoom > 1 && (
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <span className="text-[10px] font-bold text-neutral-500 uppercase">Pan Horizontally (X)</span>
+                <input
+                  type="range"
+                  min="-100"
+                  max="100"
+                  value={panX}
+                  onChange={e => setPanX(parseInt(e.target.value))}
+                  className="w-full h-1 bg-neutral-200 dark:bg-neutral-800 rounded-lg appearance-none cursor-pointer accent-luxury-gold"
+                />
+              </div>
+              <div className="space-y-1">
+                <span className="text-[10px] font-bold text-neutral-500 uppercase">Pan Vertically (Y)</span>
+                <input
+                  type="range"
+                  min="-100"
+                  max="100"
+                  value={panY}
+                  onChange={e => setPanY(parseInt(e.target.value))}
+                  className="w-full h-1 bg-neutral-200 dark:bg-neutral-800 rounded-lg appearance-none cursor-pointer accent-luxury-gold"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Filters */}
+          <div className="space-y-1.5">
+            <label className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider">Filters</label>
+            <div className="flex gap-2 overflow-x-auto pb-1 max-w-full scrollbar-thin">
+              {FILTERS.map(f => (
+                <button
+                  key={f.value}
+                  type="button"
+                  onClick={() => setFilterType(f.value)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold border shrink-0 transition-all ${
+                    filterType === f.value
+                      ? 'border-celebration-rose-gold bg-celebration-rose-gold/10 text-celebration-rose-gold'
+                      : 'border-neutral-200 dark:border-neutral-800 text-neutral-600 dark:text-neutral-400'
+                  }`}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="p-4 bg-neutral-50 dark:bg-neutral-900 border-t border-neutral-100 dark:border-neutral-800 flex justify-end gap-3">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-2 rounded-xl border border-neutral-300 dark:border-neutral-700 text-xs font-semibold text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={handleSave}
+            className="px-6 py-2 rounded-xl btn-celebration text-xs font-semibold transition-all shadow-md"
+          >
+            Apply Changes
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const SubmitStory: React.FC = () => {
   // Form State
   const [formData, setFormData] = useState({
@@ -80,18 +343,52 @@ const SubmitStory: React.FC = () => {
     showSocialMedia: false,
   });
 
-  const [photos, setPhotos] = useState<File[]>([]);
-  const [videos, setVideos] = useState<File[]>([]);
+  const [photos, setPhotos] = useState<(File | null)[]>([null, null, null, null, null]);
+  const [videos, setVideos] = useState<(File | null)[]>([null, null]);
   const [coverPhoto, setCoverPhoto] = useState<File | null>(null);
   const [thumbnail, setThumbnail] = useState<File | null>(null);
-  const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
-  const [videoPreviews, setVideoPreviews] = useState<string[]>([]);
+  const [photoPreviews, setPhotoPreviews] = useState<string[]>(['', '', '', '', '']);
+  const [videoPreviews, setVideoPreviews] = useState<string[]>(['', '']);
   const [coverPreview, setCoverPreview] = useState('');
   const [thumbPreview, setThumbPreview] = useState('');
+  const [editingImage, setEditingImage] = useState<{
+    type: 'photo' | 'cover' | 'thumbnail';
+    index?: number;
+    file: File;
+  } | null>(null);
   const [dragActive, setDragActive] = useState(false);
   const [step, setStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+
+  const handleSaveEditedImage = (editedFile: File) => {
+    if (!editingImage) return;
+
+    const { type, index } = editingImage;
+    if (type === 'cover') {
+      setCoverPhoto(editedFile);
+      if (coverPreview) URL.revokeObjectURL(coverPreview);
+      setCoverPreview(URL.createObjectURL(editedFile));
+    } else if (type === 'thumbnail') {
+      setThumbnail(editedFile);
+      if (thumbPreview) URL.revokeObjectURL(thumbPreview);
+      setThumbPreview(URL.createObjectURL(editedFile));
+    } else if (type === 'photo' && index !== undefined) {
+      setPhotos(prev => {
+        const next = [...prev];
+        next[index] = editedFile;
+        return next;
+      });
+      setPhotoPreviews(prev => {
+        const next = [...prev];
+        if (next[index]) URL.revokeObjectURL(next[index]);
+        next[index] = URL.createObjectURL(editedFile);
+        return next;
+      });
+    }
+
+    setEditingImage(null);
+  };
   const [aiWishes, setAiWishes] = useState<{ wishes: string; hashtags: string[]; giftSuggestions: string[] } | null>(null);
   const [error, setError] = useState('');
   const [isPreviewingStory, setIsPreviewingStory] = useState(false);
@@ -165,6 +462,11 @@ const SubmitStory: React.FC = () => {
   const videoInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
   const thumbInputRef = useRef<HTMLInputElement>(null);
+  
+  const slotPhotoInputRef = useRef<HTMLInputElement>(null);
+  const slotVideoInputRef = useRef<HTMLInputElement>(null);
+  const activeSlotIndex = useRef<number | null>(null);
+  const activeSlotType = useRef<'photo' | 'video' | null>(null);
 
   const totalSteps = 5;
 
@@ -181,39 +483,152 @@ const SubmitStory: React.FC = () => {
     }
   };
 
-  // Photo upload
-  const handlePhotoUpload = (files: FileList | null) => {
-    if (!files) return;
-    if (photos.length >= 5) {
-      alert("Your photo upload limit has been reached (max 5 photos).");
+  // Click slot to trigger file selector
+  const handleSlotClick = (type: 'photo' | 'video', index: number) => {
+    activeSlotIndex.current = index;
+    activeSlotType.current = type;
+    if (type === 'photo') {
+      slotPhotoInputRef.current?.click();
+    } else {
+      slotVideoInputRef.current?.click();
+    }
+  };
+
+  // Upload to specific Photo slot
+  const uploadPhotoToSlot = (index: number, file: File) => {
+    if (file.size > 15 * 1024 * 1024) {
+      alert("Photo file is too large (max 15MB).");
       return;
     }
-    const totalSelected = photos.length + files.length;
-    if (totalSelected > 5) {
-      alert(`You can only upload up to 5 photos. We added ${5 - photos.length} photos to reach your limit.`);
+    
+    setPhotos(prev => {
+      const next = [...prev];
+      next[index] = file;
+      return next;
+    });
+
+    setPhotoPreviews(prev => {
+      const next = [...prev];
+      if (next[index]) URL.revokeObjectURL(next[index]);
+      next[index] = URL.createObjectURL(file);
+      return next;
+    });
+  };
+
+  // Upload to specific Video slot
+  const uploadVideoToSlot = (index: number, file: File) => {
+    if (!file.type.startsWith('video/') && !file.name.endsWith('.mp4') && !file.name.endsWith('.mov')) {
+      alert("Please select a valid video file (MP4, MOV, etc.).");
+      return;
     }
-    const newFiles = Array.from(files).slice(0, 5 - photos.length);
-    const newPhotos = [...photos, ...newFiles].slice(0, 5);
-    setPhotos(newPhotos);
-    const previews = newPhotos.map(f => URL.createObjectURL(f));
-    setPhotoPreviews(previews);
+
+    if (file.size > 15 * 1024 * 1024) {
+      alert("Video file size exceeds 15MB limit. Please compress the video or select a smaller clip to prevent upload failures on mobile data.");
+      return;
+    }
+
+    setVideos(prev => {
+      const next = [...prev];
+      next[index] = file;
+      return next;
+    });
+
+    setVideoPreviews(prev => {
+      const next = [...prev];
+      if (next[index]) URL.revokeObjectURL(next[index]);
+      next[index] = URL.createObjectURL(file);
+      return next;
+    });
+  };
+
+  // Bulk Photo upload (filling first empty slots)
+  const handleBulkPhotoUpload = (files: FileList | null) => {
+    if (!files) return;
+    const fileList = Array.from(files);
+    
+    setPhotos(prev => {
+      const next = [...prev];
+      let fileIdx = 0;
+      for (let i = 0; i < 5; i++) {
+        if (!next[i] && fileList[fileIdx]) {
+          if (fileList[fileIdx].size <= 15 * 1024 * 1024) {
+            next[i] = fileList[fileIdx];
+          } else {
+            alert(`Photo "${fileList[fileIdx].name}" exceeds 15MB and was skipped.`);
+          }
+          fileIdx++;
+        }
+      }
+      if (fileIdx < fileList.length) {
+        alert("Some photos were ignored because the limit of 5 photos has been reached.");
+      }
+      return next;
+    });
+
+    setPhotoPreviews(prev => {
+      const next = [...prev];
+      let fileIdx = 0;
+      for (let i = 0; i < 5; i++) {
+        if (!photos[i] && fileList[fileIdx]) {
+          if (fileList[fileIdx].size <= 15 * 1024 * 1024) {
+            if (next[i]) URL.revokeObjectURL(next[i]);
+            next[i] = URL.createObjectURL(fileList[fileIdx]);
+          }
+          fileIdx++;
+        }
+      }
+      return next;
+    });
+
     if (photoInputRef.current) {
       photoInputRef.current.value = '';
     }
   };
 
-  // Video upload
-  const handleVideoUpload = (files: FileList | null) => {
+  // Bulk Video upload (filling first empty slots)
+  const handleBulkVideoUpload = (files: FileList | null) => {
     if (!files) return;
-    if (videos.length >= 1) {
-      alert("Your video upload limit has been reached (max 1 video).");
-      return;
-    }
-    const newFiles = Array.from(files).slice(0, 1 - videos.length);
-    const newVideos = [...videos, ...newFiles].slice(0, 1);
-    setVideos(newVideos);
-    const previews = newVideos.map(f => URL.createObjectURL(f));
-    setVideoPreviews(previews);
+    const fileList = Array.from(files);
+
+    const validVideos = fileList.filter(file => {
+      if (!file.type.startsWith('video/') && !file.name.endsWith('.mp4') && !file.name.endsWith('.mov')) {
+        alert(`File "${file.name}" is not a valid video.`);
+        return false;
+      }
+      if (file.size > 15 * 1024 * 1024) {
+        alert(`Video "${file.name}" exceeds 15MB limit. Please compress it or select a smaller clip.`);
+        return false;
+      }
+      return true;
+    });
+
+    setVideos(prev => {
+      const next = [...prev];
+      let fileIdx = 0;
+      for (let i = 0; i < 2; i++) {
+        if (!next[i] && validVideos[fileIdx]) {
+          next[i] = validVideos[fileIdx];
+          fileIdx++;
+        }
+      }
+      if (fileIdx < validVideos.length) {
+        alert("Some videos were ignored because the limit of 2 videos has been reached.");
+      }
+      return next;
+    });
+
+    setVideoPreviews(prev => {
+      const next = [...prev];
+      let fileIdx = 0;
+      for (let i = 0; i < 2; i++) {
+        if (!videos[i] && validVideos[fileIdx]) {
+          if (next[i]) URL.revokeObjectURL(next[i]);
+          next[i] = URL.createObjectURL(validVideos[fileIdx]);
+          fileIdx++;
+        }
+      }
+      return next;
+    });
 
     if (videoInputRef.current) {
       videoInputRef.current.value = '';
@@ -223,6 +638,10 @@ const SubmitStory: React.FC = () => {
   // Cover photo
   const handleCoverUpload = (files: FileList | null) => {
     if (!files || !files[0]) return;
+    if (files[0].size > 15 * 1024 * 1024) {
+      alert("Cover photo is too large (max 15MB).");
+      return;
+    }
     setCoverPhoto(files[0]);
     setCoverPreview(URL.createObjectURL(files[0]));
   };
@@ -230,19 +649,41 @@ const SubmitStory: React.FC = () => {
   // Thumbnail
   const handleThumbUpload = (files: FileList | null) => {
     if (!files || !files[0]) return;
+    if (files[0].size > 15 * 1024 * 1024) {
+      alert("Thumbnail photo is too large (max 15MB).");
+      return;
+    }
     setThumbnail(files[0]);
     setThumbPreview(URL.createObjectURL(files[0]));
   };
 
-  // Remove media
-  const removePhoto = (index: number) => {
-    setPhotos(prev => prev.filter((_, i) => i !== index));
-    setPhotoPreviews(prev => prev.filter((_, i) => i !== index));
+  // Remove slot-specific media
+  const removePhotoFromSlot = (index: number) => {
+    setPhotos(prev => {
+      const next = [...prev];
+      next[index] = null;
+      return next;
+    });
+    setPhotoPreviews(prev => {
+      const next = [...prev];
+      if (next[index]) URL.revokeObjectURL(next[index]);
+      next[index] = '';
+      return next;
+    });
   };
 
-  const removeVideo = (index: number) => {
-    setVideos(prev => prev.filter((_, i) => i !== index));
-    setVideoPreviews(prev => prev.filter((_, i) => i !== index));
+  const removeVideoFromSlot = (index: number) => {
+    setVideos(prev => {
+      const next = [...prev];
+      next[index] = null;
+      return next;
+    });
+    setVideoPreviews(prev => {
+      const next = [...prev];
+      if (next[index]) URL.revokeObjectURL(next[index]);
+      next[index] = '';
+      return next;
+    });
   };
 
   const removeCover = () => {
@@ -274,8 +715,8 @@ const SubmitStory: React.FC = () => {
         if (f.type.startsWith('image/')) imageFiles.push(f);
         if (f.type.startsWith('video/')) videoFiles.push(f);
       });
-      if (imageFiles.length) handlePhotoUpload(createFileList(imageFiles));
-      if (videoFiles.length) handleVideoUpload(createFileList(videoFiles));
+      if (imageFiles.length) handleBulkPhotoUpload(createFileList(imageFiles));
+      if (videoFiles.length) handleBulkVideoUpload(createFileList(videoFiles));
     }
   }, [photos, videos]);
 
@@ -307,11 +748,18 @@ const SubmitStory: React.FC = () => {
         photos: [], videos: []
       };
 
+      const activePhotos = photos.filter((f): f is File => !!f);
+      const activeVideos = videos.filter((f): f is File => !!f);
+
+      const compressedPhotos = await Promise.all(activePhotos.map(f => compressImage(f)));
+      const compressedCover = coverPhoto ? await compressImage(coverPhoto) : undefined;
+      const compressedThumb = thumbnail ? await compressImage(thumbnail) : undefined;
+
       const allFiles = [
-        ...photos.map(f => ({ file: f, type: 'photo' as const })),
-        ...videos.map(f => ({ file: f, type: 'video' as const })),
-        ...(coverPhoto ? [{ file: coverPhoto, type: 'cover' as const }] : []),
-        ...(thumbnail ? [{ file: thumbnail, type: 'thumb' as const }] : []),
+        ...compressedPhotos.map(f => ({ file: f, type: 'photo' as const })),
+        ...activeVideos.map(f => ({ file: f, type: 'video' as const })),
+        ...(compressedCover ? [{ file: compressedCover, type: 'cover' as const }] : []),
+        ...(compressedThumb ? [{ file: compressedThumb, type: 'thumb' as const }] : []),
       ];
 
       if (allFiles.length > 0) {
@@ -326,11 +774,11 @@ const SubmitStory: React.FC = () => {
 
         if (uploadData.files) {
           let idx = 0;
-          photos.forEach(() => {
+          activePhotos.forEach(() => {
             if (uploadData.files[idx]) mediaUrls.photos.push(uploadData.files[idx].url);
             idx++;
           });
-          videos.forEach(() => {
+          activeVideos.forEach(() => {
             if (uploadData.files[idx]) mediaUrls.videos.push(uploadData.files[idx].url);
             idx++;
           });
@@ -414,21 +862,28 @@ const SubmitStory: React.FC = () => {
           <h2 className="text-2xl font-serif font-bold celebration-text-gradient mb-3">
             Story Submitted!
           </h2>
-          <p className="text-luxury-black-light/70 text-sm leading-relaxed mb-6">
-            Your celebration story has been submitted successfully! Our team will review it and publish it on your chosen date. You'll receive an email notification once it's approved. ✨
+          <p className="text-luxury-black-light/70 text-sm leading-relaxed mb-4">
+            Your celebration story has been submitted successfully! Please wait for story approval, otherwise contact the approval manager. ✨
           </p>
-          <div className="flex flex-col gap-3">
+          
+          <div className="flex flex-col gap-3 items-center w-full">
+            <a
+              href="https://wa.me/919108531238?text=Hello%20Approval%20Manager,%20I%20have%20submitted%20my%20celebration%20story%20and%20would%20like%20to%20request%20approval.%20Please%20let%20me%20know%20how%20to%20proceed!"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-[#25D366] hover:bg-[#20ba5a] text-white text-sm font-semibold shadow-md transition-all hover:scale-[1.02]"
+            >
+              <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.73-1.45L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.37 9.864-9.799.002-2.63-1.023-5.101-2.885-6.968C16.574 3.97 14.101 2.945 11.48 2.945c-5.437 0-9.862 4.371-9.865 9.801-.001 1.77.468 3.498 1.357 5.03L1.93 21.056l3.882-.996c1.55.932 3.125 1.353 4.835 1.354zm8.252-6.965c-.247-.123-1.463-.722-1.69-.804-.226-.082-.391-.123-.556.124-.165.247-.641.804-.785.965-.145.166-.29.186-.537.063-.247-.123-1.045-.385-1.99-1.229-.735-.656-1.232-1.465-1.377-1.712-.145-.247-.015-.38.109-.502.112-.11.247-.29.37-.435.124-.145.165-.247.247-.412.083-.166.042-.31-.02-.435-.062-.124-.556-1.341-.762-1.838-.2-.486-.421-.42-.556-.427-.124-.007-.267-.008-.41-.008-.144 0-.38.054-.578.273-.198.219-.757.74-.757 1.804s.774 2.087.88 2.228c.107.145 1.524 2.327 3.69 3.262.516.222.918.355 1.232.456.52.165.992.142 1.364.086.415-.062 1.463-.598 1.67-1.175.206-.578.206-1.072.144-1.175-.062-.103-.227-.165-.474-.288z" />
+              </svg>
+              Contact Approval Manager
+            </a>
+            
             <button
               onClick={() => window.location.href = '/'}
-              className="btn-celebration rounded-full py-3 px-6 text-sm font-semibold"
+              className="btn-celebration rounded-full py-3 px-6 text-sm font-semibold w-full"
             >
               Back to Home
-            </button>
-            <button
-              onClick={() => { setSubmitted(false); setStep(1); setFormData(prev => ({ ...prev, customerName: '', email: '', title: '' })); }}
-              className="text-sm text-celebration-rose-gold hover:text-luxury-gold transition-colors"
-            >
-              Submit Another Story
             </button>
           </div>
         </motion.div>
@@ -615,15 +1070,26 @@ const SubmitStory: React.FC = () => {
 
             {/* ═══ STEP 3: Media Upload ═══ */}
             {step === 3 && (
-              <div className="space-y-5">
-                <div className="flex items-center gap-2 mb-6">
+              <div className="space-y-6">
+                <div className="flex items-center gap-2 mb-4">
                   <Camera className="w-5 h-5 text-celebration-royal-purple" />
                   <h2 className="text-lg font-serif font-bold text-luxury-black-light">Upload Media</h2>
                 </div>
 
+                <div className="p-4 rounded-xl bg-orange-50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-900/50 flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-orange-500 shrink-0 mt-0.5" />
+                  <div>
+                    <h5 className="text-xs font-bold text-orange-800 dark:text-orange-300">File Limits & Guidelines</h5>
+                    <p className="text-[10px] text-orange-700/80 dark:text-orange-400/80 mt-0.5 leading-relaxed">
+                      To prevent timeouts and failures on mobile networks, photos will be compressed automatically. 
+                      <strong> Videos must be under 15MB each</strong>. Please select shorter video clips or compress them beforehand.
+                    </p>
+                  </div>
+                </div>
+
                 {/* Drag & Drop Zone */}
                 <div
-                  className={`relative border-2 border-dashed rounded-2xl p-8 text-center transition-all ${
+                  className={`relative border-2 border-dashed rounded-2xl p-6 text-center transition-all ${
                     dragActive
                       ? 'border-luxury-gold bg-celebration-gold-light/20 scale-[1.02]'
                       : 'border-luxury-gold/20 hover:border-luxury-gold/40'
@@ -633,154 +1099,227 @@ const SubmitStory: React.FC = () => {
                   onDragLeave={handleDrag}
                   onDrop={handleDrop}
                 >
-                  <Upload className="w-10 h-10 text-luxury-gold/50 mx-auto mb-3" />
-                  <p className="text-sm text-luxury-black-light/60 mb-1">
-                    Drag & drop your photos and videos here
+                  <Upload className="w-8 h-8 text-luxury-gold/50 mx-auto mb-2" />
+                  <p className="text-xs text-luxury-black-light/60 mb-1">
+                    Drag & drop your files here, or use the buttons below
                   </p>
-                  <p className="text-[10px] text-luxury-black-light/40 mb-4">
-                    Max 5 photos • Max 1 video • JPG, PNG, GIF, MP4, MOV
+                  <p className="text-[9px] text-luxury-black-light/40 mb-3">
+                    Max 5 photos • Max 2 videos • JPG, PNG, GIF, MP4, MOV (max 15MB per video)
                   </p>
-                  <div className="flex gap-3 justify-center">
+                  <div className="flex gap-2 justify-center">
                     <button
+                      type="button"
                       onClick={() => photoInputRef.current?.click()}
-                      className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-gradient-to-r from-luxury-gold/10 to-celebration-rose-gold/10 border border-luxury-gold/20 text-xs font-semibold text-luxury-gold hover:shadow-gold-glow transition-all"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-luxury-gold/10 to-celebration-rose-gold/10 border border-luxury-gold/20 text-[10px] font-semibold text-luxury-gold hover:shadow-gold-glow transition-all"
                     >
-                      <Image className="w-3.5 h-3.5" />
-                      Photos ({photos.length}/5)
+                      <Image className="w-3 h-3" />
+                      Bulk Photos ({photos.filter(Boolean).length}/5)
                     </button>
                     <button
+                      type="button"
                       onClick={() => videoInputRef.current?.click()}
-                      className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-gradient-to-r from-celebration-royal-purple/10 to-celebration-rose-gold/10 border border-celebration-royal-purple/20 text-xs font-semibold text-celebration-royal-purple hover:shadow-celebration transition-all"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-celebration-royal-purple/10 to-celebration-rose-gold/10 border border-celebration-royal-purple/20 text-[10px] font-semibold text-celebration-royal-purple hover:shadow-celebration transition-all"
                     >
-                      <Video className="w-3.5 h-3.5" />
-                      Videos ({videos.length}/1)
+                      <Video className="w-3 h-3" />
+                      Bulk Videos ({videos.filter(Boolean).length}/2)
                     </button>
                   </div>
                 </div>
 
-                <input ref={photoInputRef} type="file" accept="image/*" multiple className="hidden" onChange={e => handlePhotoUpload(e.target.files)} />
-                <input ref={videoInputRef} type="file" accept="video/mp4,video/quicktime,video/*,.mp4,.mov" className="hidden" onChange={e => handleVideoUpload(e.target.files)} />
+                <input ref={photoInputRef} type="file" accept="image/*" multiple className="hidden" onChange={e => handleBulkPhotoUpload(e.target.files)} />
+                <input ref={videoInputRef} type="file" accept="video/mp4,video/quicktime,video/*,.mp4,.mov" multiple className="hidden" onChange={e => handleBulkVideoUpload(e.target.files)} />
                 <input ref={coverInputRef} type="file" accept="image/*" className="hidden" onChange={e => handleCoverUpload(e.target.files)} />
                 <input ref={thumbInputRef} type="file" accept="image/*" className="hidden" onChange={e => handleThumbUpload(e.target.files)} />
+                
+                <input ref={slotPhotoInputRef} type="file" accept="image/*" className="hidden" onChange={e => {
+                  if (activeSlotIndex.current !== null && e.target.files?.[0]) {
+                    uploadPhotoToSlot(activeSlotIndex.current, e.target.files[0]);
+                  }
+                  e.target.value = '';
+                }} />
+                <input ref={slotVideoInputRef} type="file" accept="video/mp4,video/quicktime,video/*,.mp4,.mov" className="hidden" onChange={e => {
+                  if (activeSlotIndex.current !== null && e.target.files?.[0]) {
+                    uploadVideoToSlot(activeSlotIndex.current, e.target.files[0]);
+                  }
+                  e.target.value = '';
+                }} />
 
-                {/* Photo Previews */}
-                {photoPreviews.length > 0 && (
-                  <div>
-                    <label className="text-xs font-bold text-luxury-black-light/60 mb-2 block">Photos</label>
-                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
-                      {photoPreviews.map((url, i) => (
-                        <div key={i} className="relative group rounded-xl overflow-hidden aspect-square border border-luxury-gold/10">
-                          <img src={url} alt={`Photo ${i + 1}`} className="w-full h-full object-cover" />
+                {/* Cover & Thumbnail Grid */}
+                <div className="space-y-2">
+                  <h3 className="text-xs font-bold text-luxury-black-light/60 uppercase tracking-wider">Story Listing Assets (Cover & Icon)</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-[10px] font-bold text-luxury-black-light/40 mb-1.5 block">1. Cover Photo (Full Screen Banner)</label>
+                      <div className="relative group rounded-xl overflow-hidden aspect-video border border-luxury-gold/15 bg-white dark:bg-neutral-800 flex items-center justify-center">
+                        {coverPreview ? (
+                          <>
+                            <img src={coverPreview} alt="Cover" className="w-full h-full object-cover" />
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5">
+                              <button
+                                type="button"
+                                onClick={() => coverInputRef.current?.click()}
+                                className="px-2 py-1 rounded-full bg-white text-[9px] font-bold text-[#b32454] shadow-md hover:scale-105 transition-all"
+                              >
+                                Change
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setEditingImage({ type: 'cover', file: coverPhoto! })}
+                                className="px-2 py-1 rounded-full bg-amber-500 text-white text-[9px] font-bold shadow-md hover:scale-105 transition-all"
+                              >
+                                Crop/Edit
+                              </button>
+                              <button
+                                type="button"
+                                onClick={(e) => { e.stopPropagation(); removeCover(); }}
+                                className="px-2 py-1 rounded-full bg-red-600 text-[9px] font-bold text-white shadow-md hover:scale-105 transition-all"
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </>
+                        ) : (
                           <button
-                            onClick={() => removePhoto(i)}
-                            className="absolute top-1 right-1 w-5 h-5 rounded-full bg-red-500/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                            type="button"
+                            onClick={() => coverInputRef.current?.click()}
+                            className="w-full h-full flex flex-col items-center justify-center text-center p-2 hover:bg-rose-50/10 transition-all"
                           >
-                            <X className="w-3 h-3 text-white" />
+                            <Camera className="w-5 h-5 text-luxury-gold/40 mx-auto" />
+                            <span className="text-[10px] text-luxury-gold/40 block mt-1">Upload Cover Photo</span>
                           </button>
-                        </div>
-                      ))}
+                        )}
+                      </div>
                     </div>
-                  </div>
-                )}
-
-                {/* Video Previews */}
-                {videoPreviews.length > 0 && (
-                  <div>
-                    <label className="text-xs font-bold text-luxury-black-light/60 mb-2 block">Videos</label>
-                    <div className="grid grid-cols-2 gap-2">
-                      {videoPreviews.map((url, i) => (
-                        <div key={i} className="relative group rounded-xl overflow-hidden aspect-video border border-luxury-gold/10">
-                          <video src={url} className="w-full h-full object-cover" muted />
+                    <div>
+                      <label className="text-[10px] font-bold text-luxury-black-light/40 mb-1.5 block">2. Story Thumbnail (Circle Icon)</label>
+                      <div className="relative group rounded-xl overflow-hidden aspect-video border border-celebration-rose-gold/15 bg-white dark:bg-neutral-800 flex items-center justify-center">
+                        {thumbPreview ? (
+                          <>
+                            <img src={thumbPreview} alt="Thumbnail" className="w-full h-full object-cover" />
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5">
+                              <button
+                                type="button"
+                                onClick={() => thumbInputRef.current?.click()}
+                                className="px-2 py-1 rounded-full bg-white text-[9px] font-bold text-[#b32454] shadow-md hover:scale-105 transition-all"
+                              >
+                                Change
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setEditingImage({ type: 'thumbnail', file: thumbnail! })}
+                                className="px-2 py-1 rounded-full bg-amber-500 text-white text-[9px] font-bold shadow-md hover:scale-105 transition-all"
+                              >
+                                Crop/Edit
+                              </button>
+                              <button
+                                type="button"
+                                onClick={(e) => { e.stopPropagation(); removeThumb(); }}
+                                className="px-2 py-1 rounded-full bg-red-600 text-[9px] font-bold text-white shadow-md hover:scale-105 transition-all"
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </>
+                        ) : (
                           <button
-                            onClick={() => removeVideo(i)}
-                            className="absolute top-1 right-1 w-5 h-5 rounded-full bg-red-500/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                            type="button"
+                            onClick={() => thumbInputRef.current?.click()}
+                            className="w-full h-full flex flex-col items-center justify-center text-center p-2 hover:bg-rose-50/10 transition-all"
                           >
-                            <X className="w-3 h-3 text-white" />
+                            <Eye className="w-5 h-5 text-celebration-rose-gold/40 mx-auto" />
+                            <span className="text-[10px] text-celebration-rose-gold/40 block mt-1">Story Thumbnail</span>
                           </button>
-                          <div className="absolute bottom-1 left-1 text-[9px] bg-black/60 text-white px-1.5 py-0.5 rounded">
-                            <Video className="w-2.5 h-2.5 inline mr-0.5" />Video
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Cover & Thumbnail */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-xs font-bold text-luxury-black-light/60 mb-2 block">Cover Photo</label>
-                    <div className="relative group rounded-xl overflow-hidden aspect-video border border-luxury-gold/10 bg-white">
-                      {coverPreview ? (
-                        <>
-                          <img src={coverPreview} alt="Cover" className="w-full h-full object-cover" />
-                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                            <button
-                              type="button"
-                              onClick={() => coverInputRef.current?.click()}
-                              className="px-3 py-1.5 rounded-full bg-white/95 text-[10px] font-bold text-[#b32454] shadow-md hover:scale-105 transition-all"
-                            >
-                              Change
-                            </button>
-                            <button
-                              type="button"
-                              onClick={(e) => { e.stopPropagation(); removeCover(); }}
-                              className="px-3 py-1.5 rounded-full bg-red-600/95 text-[10px] font-bold text-white shadow-md hover:scale-105 transition-all"
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        </>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => coverInputRef.current?.click()}
-                          className="w-full h-full flex flex-col items-center justify-center text-center hover:bg-rose-50/10 transition-all"
-                        >
-                          <Camera className="w-5 h-5 text-luxury-gold/40 mx-auto" />
-                          <span className="text-[10px] text-luxury-gold/40 block mt-1">Upload Cover Photo</span>
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                  <div>
-                    <label className="text-xs font-bold text-luxury-black-light/60 mb-2 block">Thumbnail</label>
-                    <div className="relative group rounded-xl overflow-hidden aspect-video border border-celebration-rose-gold/10 bg-white">
-                      {thumbPreview ? (
-                        <>
-                          <img src={thumbPreview} alt="Thumbnail" className="w-full h-full object-cover" />
-                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                            <button
-                              type="button"
-                              onClick={() => thumbInputRef.current?.click()}
-                              className="px-3 py-1.5 rounded-full bg-white/95 text-[10px] font-bold text-[#b32454] shadow-md hover:scale-105 transition-all"
-                            >
-                              Change
-                            </button>
-                            <button
-                              type="button"
-                              onClick={(e) => { e.stopPropagation(); removeThumb(); }}
-                              className="px-3 py-1.5 rounded-full bg-red-600/95 text-[10px] font-bold text-white shadow-md hover:scale-105 transition-all"
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        </>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => thumbInputRef.current?.click()}
-                          className="w-full h-full flex flex-col items-center justify-center text-center hover:bg-rose-50/10 transition-all"
-                        >
-                          <Eye className="w-5 h-5 text-celebration-rose-gold/40 mx-auto" />
-                          <span className="text-[10px] text-celebration-rose-gold/40 block mt-1">Story Thumbnail</span>
-                        </button>
-                      )}
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Preview draft button in step 3 */}
+                {/* Slides Section */}
+                <div className="space-y-3">
+                  <h3 className="text-xs font-bold text-luxury-black-light/60 uppercase tracking-wider">Story Slides (Slideshow Elements)</h3>
+                  
+                  {/* Photo Slides Grid */}
+                  <div className="space-y-1.5">
+                    <span className="text-[10px] font-bold text-luxury-black-light/40 block">Photo Slides (Max 5)</span>
+                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
+                      {[0, 1, 2, 3, 4].map((i) => (
+                        <div key={i} className="relative group rounded-xl overflow-hidden aspect-[3/4] border border-luxury-gold/15 bg-white dark:bg-neutral-800 flex flex-col items-center justify-center">
+                          {photoPreviews[i] ? (
+                            <>
+                              <img src={photoPreviews[i]} alt={`Slide ${i + 1}`} className="w-full h-full object-cover" />
+                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5">
+                                <button
+                                  type="button"
+                                  onClick={() => setEditingImage({ type: 'photo', index: i, file: photos[i]! })}
+                                  className="w-6 h-6 rounded-full bg-amber-500 text-white flex items-center justify-center shadow hover:scale-110 transition-all"
+                                  title="Crop/Edit Photo"
+                                >
+                                  <Sparkles className="w-3.5 h-3.5" />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => removePhotoFromSlot(i)}
+                                  className="w-6 h-6 rounded-full bg-red-600 text-white flex items-center justify-center shadow hover:scale-110 transition-all"
+                                  title="Delete"
+                                >
+                                  <X className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                              <span className="absolute bottom-1 left-1/2 -translate-x-1/2 bg-black/60 text-white text-[8px] px-1 rounded">Slide {i + 1}</span>
+                            </>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => handleSlotClick('photo', i)}
+                              className="w-full h-full flex flex-col items-center justify-center p-2 text-neutral-400 dark:text-neutral-500 hover:text-luxury-gold hover:bg-rose-50/10 transition-all"
+                            >
+                              <Image className="w-5 h-5 mb-1" />
+                              <span className="text-[8px] font-bold uppercase tracking-wider">Add Photo {i + 1}</span>
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Video Slides Grid */}
+                  <div className="space-y-1.5">
+                    <span className="text-[10px] font-bold text-luxury-black-light/40 block">Video Slides (Max 2 • Max 15MB each)</span>
+                    <div className="grid grid-cols-2 gap-4">
+                      {[0, 1].map((i) => (
+                        <div key={i} className="relative group rounded-xl overflow-hidden aspect-video border border-celebration-royal-purple/15 bg-white dark:bg-neutral-800 flex flex-col items-center justify-center">
+                          {videoPreviews[i] ? (
+                            <>
+                              <video src={videoPreviews[i]} className="w-full h-full object-cover" muted />
+                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                <button
+                                  type="button"
+                                  onClick={() => removeVideoFromSlot(i)}
+                                  className="w-7 h-7 rounded-full bg-red-600 text-white flex items-center justify-center shadow hover:scale-110 transition-all"
+                                >
+                                  <X className="w-4 h-4" />
+                                </button>
+                              </div>
+                              <span className="absolute bottom-1 left-1.5 bg-black/60 text-white text-[8px] px-1 rounded">Video {i + 1}</span>
+                            </>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => handleSlotClick('video', i)}
+                              className="w-full h-full flex flex-col items-center justify-center p-2 text-neutral-400 dark:text-neutral-500 hover:text-celebration-royal-purple hover:bg-purple-50/10 transition-all"
+                            >
+                              <Video className="w-5 h-5 mb-1" />
+                              <span className="text-[9px] font-bold uppercase tracking-wider">Add Video {i + 1}</span>
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Preview Draft Button */}
                 <div className="flex justify-center pt-2">
                   <button
                     type="button"
@@ -990,7 +1529,7 @@ const SubmitStory: React.FC = () => {
                 {/* Summary */}
                 <div className="p-4 rounded-xl bg-gradient-to-r from-celebration-gold-light/20 to-celebration-soft-pink-light/20 border border-luxury-gold/10">
                   <h3 className="text-xs font-bold text-luxury-gold mb-3 uppercase">Story Summary</h3>
-                  <div className="grid grid-cols-2 gap-y-2 gap-x-4 text-xs">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-4 text-xs">
                     <SummaryItem label="Name" value={formData.customerName} />
                     {['Anniversary', 'Wedding', 'Proposal'].includes(formData.occasion) && (
                       <>
@@ -1004,8 +1543,8 @@ const SubmitStory: React.FC = () => {
                     <SummaryItem label="Date" value={formData.celebrationDate} />
                     <SummaryItem label="Duration" value={DURATION_OPTIONS.find(d => d.value === formData.storyDuration)?.label || ''} />
                     <SummaryItem label="Music" value={MUSIC_OPTIONS.find(m => m.value === formData.backgroundMusic)?.label || 'None'} />
-                    <SummaryItem label="Photos" value={`${photos.length} uploaded`} />
-                    <SummaryItem label="Videos" value={`${videos.length} uploaded`} />
+                    <SummaryItem label="Photos" value={`${photos.filter(Boolean).length} uploaded`} />
+                    <SummaryItem label="Videos" value={`${videos.filter(Boolean).length} uploaded`} />
                     <SummaryItem label="Visibility" value={formData.visibility} />
                   </div>
                 </div>
@@ -1020,8 +1559,8 @@ const SubmitStory: React.FC = () => {
             )}
 
             {/* Navigation Buttons */}
-            <div className="flex justify-between mt-8 pt-4 border-t border-luxury-gold/10">
-              <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-8 pt-4 border-t border-luxury-gold/10">
+              <div className="flex gap-2 w-full sm:w-auto justify-center sm:justify-start">
                 {step > 1 && (
                   <button
                     onClick={() => setStep(step - 1)}
@@ -1046,7 +1585,7 @@ const SubmitStory: React.FC = () => {
                 <button
                   onClick={() => { if (isStepValid(step)) setStep(step + 1); }}
                   disabled={!isStepValid(step)}
-                  className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all ${
+                  className={`w-full sm:w-auto px-6 py-2.5 rounded-full text-sm font-semibold transition-all ${
                     isStepValid(step)
                       ? 'btn-celebration'
                       : 'bg-gray-200 text-gray-400 cursor-not-allowed'
@@ -1058,7 +1597,7 @@ const SubmitStory: React.FC = () => {
                 <button
                   onClick={handleSubmit}
                   disabled={submitting}
-                  className="btn-celebration px-8 py-2.5 rounded-full text-sm font-semibold flex items-center gap-2"
+                  className="btn-celebration w-full sm:w-auto px-8 py-2.5 rounded-full text-sm font-semibold flex items-center justify-center gap-2"
                 >
                   {submitting ? (
                     <>
@@ -1091,8 +1630,8 @@ const SubmitStory: React.FC = () => {
             thumbnail: thumbPreview || '',
             brideName: ['Anniversary', 'Wedding', 'Proposal'].includes(formData.occasion) ? formData.brideName : '',
             groomName: ['Anniversary', 'Wedding', 'Proposal'].includes(formData.occasion) ? formData.groomName : '',
-            photos: photoPreviews,
-            videos: videoPreviews,
+            photos: photoPreviews.filter(Boolean),
+            videos: videoPreviews.filter(Boolean),
             personalMessage: formData.personalMessage || '',
             giftMessage: formData.giftMessage || '',
             celebrationDate: formData.celebrationDate || new Date().toISOString(),
@@ -1102,6 +1641,15 @@ const SubmitStory: React.FC = () => {
           }]}
           initialIndex={0}
           onClose={() => setIsPreviewingStory(false)}
+        />
+      )}
+
+      {editingImage && (
+        <ImageEditorModal
+          file={editingImage.file}
+          defaultAspect={editingImage.type === 'photo' ? '9:16' : '1:1'}
+          onClose={() => setEditingImage(null)}
+          onSave={handleSaveEditedImage}
         />
       )}
 

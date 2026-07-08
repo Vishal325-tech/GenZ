@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Trash2, Calendar, Gift, Ticket, MessageSquare, ArrowRight, Clock } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { getAssetUrl } from '../data/initialData';
 
 const Cart: React.FC = () => {
   const navigate = useNavigate();
@@ -70,7 +71,7 @@ const Cart: React.FC = () => {
             >
               {/* Product Thumbnail */}
               <img
-                src={item.image}
+                src={getAssetUrl(item.image)}
                 alt={item.name}
                 className="h-24 w-24 rounded-lg object-cover bg-neutral-100 shrink-0 mx-auto sm:mx-0"
               />

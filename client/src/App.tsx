@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'r
 import { ThemeProvider } from './context/ThemeContext';
 import { LanguageProvider } from './context/LanguageContext';
 import { AuthProvider } from './context/AuthContext';
+import { AdminAuthProvider } from './context/AdminAuthContext';
 import { CartProvider } from './context/CartContext';
 import { WishlistProvider } from './context/WishlistContext';
 
@@ -80,14 +81,32 @@ const LayoutWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 // import { CartProvider } from './context/CartProvider';
 // That is incorrect! It should be './context/CartContext'. Let's fix that in the code block.
 
+import AdminLayout from './components/admin/AdminLayout';
+import AdminProtectedRoute from './components/admin/AdminProtectedRoute';
+import AdminSignIn from './pages/admin/auth/AdminSignIn';
+import AdminSignUp from './pages/admin/auth/AdminSignUp';
+import AdminForgotPassword from './pages/admin/auth/AdminForgotPassword';
+import AdminResetPassword from './pages/admin/auth/AdminResetPassword';
+import AdminVerifyOTP from './pages/admin/auth/AdminVerifyOTP';
+
+import Dashboard from './pages/admin/Dashboard';
+import CustomerManagement from './pages/admin/CustomerManagement';
+import OrderManagement from './pages/admin/OrderManagement';
+import ShopManagement from './pages/admin/ShopManagement';
+
+import { 
+  CompanyManagement, MediaLibrary, DeliveryManagement,
+  Coupons, Reviews, Blogs as AdminBlogs, Notifications, Reports, Settings, Admins 
+} from './pages/admin/Placeholders';
+
 const App: React.FC = () => {
   return (
     <ThemeProvider>
       <LanguageProvider>
         <AuthProvider>
-          {/* Note: In CartContext.tsx we declared CartProvider. We import from CartContext */}
-          <CartProvider>
-            <WishlistProvider>
+          <AdminAuthProvider>
+            <CartProvider>
+              <WishlistProvider>
               <Router basename={import.meta.env.BASE_URL}>
                 <LayoutWrapper>
                   <Routes>
@@ -101,13 +120,44 @@ const App: React.FC = () => {
 
                     <Route path="/blogs" element={<Blogs />} />
                     <Route path="/gallery" element={<Gallery />} />
-                    <Route path="/admin" element={<AdminDashboard />} />
-                    <Route path="/admin/stories" element={<AdminStoryDashboard />} />
                     <Route path="/occasion/:occasionName" element={<OccasionPage />} />
                     <Route path="/delivery" element={<DeliveryDashboard />} />
                     <Route path="/stories/submit" element={<SubmitStory />} />
                     <Route path="/stories/archive" element={<StoryArchive />} />
                     <Route path="/stories" element={<StoryArchive />} />
+                    
+                    {/* Admin Portal Routes */}
+                    <Route path="/admin">
+                      {/* Auth Routes */}
+                      <Route path="login" element={<AdminSignIn />} />
+                      <Route path="signup" element={<AdminSignUp />} />
+                      <Route path="forgot-password" element={<AdminForgotPassword />} />
+                      <Route path="reset-password" element={<AdminResetPassword />} />
+                      <Route path="verify-otp" element={<AdminVerifyOTP />} />
+
+                      {/* Protected Dashboard Routes */}
+                      <Route element={<AdminProtectedRoute />}>
+                        <Route element={<AdminLayout />}>
+                          <Route index element={<Dashboard />} />
+                          <Route path="company" element={<CompanyManagement />} />
+                          <Route path="customers" element={<CustomerManagement />} />
+                          <Route path="orders" element={<OrderManagement />} />
+                          <Route path="products" element={<ShopManagement />} />
+                          <Route path="categories" element={<ShopManagement />} />
+                          <Route path="stories" element={<AdminStoryDashboard />} />
+                          <Route path="gallery" element={<MediaLibrary />} />
+                          <Route path="media" element={<MediaLibrary />} />
+                          <Route path="delivery" element={<DeliveryManagement />} />
+                          <Route path="coupons" element={<Coupons />} />
+                          <Route path="reviews" element={<Reviews />} />
+                          <Route path="blogs" element={<AdminBlogs />} />
+                          <Route path="notifications" element={<Notifications />} />
+                          <Route path="reports" element={<Reports />} />
+                          <Route path="settings" element={<Settings />} />
+                          <Route path="admins" element={<Admins />} />
+                        </Route>
+                      </Route>
+                    </Route>
                     
                     {/* Redirect login and all unknown routes to home */}
                     <Route path="/login" element={<Login />} />
@@ -116,7 +166,8 @@ const App: React.FC = () => {
                 </LayoutWrapper>
               </Router>
             </WishlistProvider>
-          </CartProvider>
+            </CartProvider>
+          </AdminAuthProvider>
         </AuthProvider>
       </LanguageProvider>
     </ThemeProvider>

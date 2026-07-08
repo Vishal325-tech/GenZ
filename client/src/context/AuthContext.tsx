@@ -4,7 +4,7 @@ export interface UserType {
   _id: string;
   name: string;
   email: string;
-  role: 'customer' | 'admin' | 'manager' | 'editor' | 'delivery';
+  role: 'customer' | 'superadmin' | 'admin' | 'manager' | 'editor' | 'delivery' | 'support';
   phone?: string;
   addressBook?: Array<{
     _id?: string;

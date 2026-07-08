@@ -45,19 +45,28 @@ export interface MediaItem {
 export const getAssetUrl = (url: string | undefined): string => {
   if (!url) return 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=500';
   
+  if (url.startsWith('http') && !url.includes('localhost:5000')) {
+    return url;
+  }
+
+  const apiUrl = import.meta.env.VITE_API_URL;
+  const backendBase = apiUrl 
+    ? (apiUrl.endsWith('/api') ? apiUrl.replace('/api', '') : (apiUrl.endsWith('/api/') ? apiUrl.replace('/api/', '') : apiUrl))
+    : 'http://localhost:5000';
+
   if (url.startsWith('http://localhost:5000/uploads/')) {
     const filename = url.replace('http://localhost:5000/uploads/', '');
-    return `${import.meta.env.BASE_URL}uploads/${filename}`;
+    return `${backendBase}/uploads/${filename}`;
   }
   if (url.startsWith('http://localhost:5000/images/')) {
     const filename = url.replace('http://localhost:5000/images/', '');
-    return `${import.meta.env.BASE_URL}images/${filename}`;
+    return `${backendBase}/images/${filename}`;
   }
   if (url.startsWith('/uploads/')) {
-    return `${import.meta.env.BASE_URL}${url.slice(1)}`;
+    return `${backendBase}${url}`;
   }
   if (url.startsWith('/images/')) {
-    return `${import.meta.env.BASE_URL}${url.slice(1)}`;
+    return `${backendBase}${url}`;
   }
   return url;
 };

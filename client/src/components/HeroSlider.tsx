@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Search, Gem, Heart, Package, Clock, ShieldCheck, Truck, RefreshCw, Headphones, Award, Star, Gift } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
-const SLIDES = [
+const DEFAULT_SLIDES = [
   {
     id: 1,
     theme: 'pink',
@@ -82,11 +82,41 @@ const HeroSlider: React.FC = () => {
   const { t } = useLanguage();
 
   const [isHovered, setIsHovered] = useState(false);
+  const [slides, setSlides] = useState(DEFAULT_SLIDES);
+
+  useEffect(() => {
+    const fetchHeroImages = async () => {
+      try {
+        // Use full URL if API_URL is needed, but we can assume proxy or absolute path. 
+        // Vite proxy usually covers /api, but let's be safe.
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+        const url = apiUrl.endsWith('/api') ? apiUrl.replace('/api', '/api/ui/images/genz_ui_hero') : `${apiUrl}/ui/images/genz_ui_hero`;
+        
+        const res = await fetch(url);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && data.images && data.images.length > 0) {
+            setSlides(prev => prev.map((slide, index) => {
+              // Map Cloudinary images to slides, fallback to default if not enough images
+              if (data.images[index]) {
+                return { ...slide, image: data.images[index].url };
+              }
+              return slide;
+            }));
+          }
+        }
+      } catch (err) {
+        console.error('Failed to fetch dynamic hero images:', err);
+      }
+    };
+
+    fetchHeroImages();
+  }, []);
 
   useEffect(() => {
     if (isHovered) return;
     const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % SLIDES.length);
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
     }, 7500);
     return () => clearInterval(timer);
   }, [isHovered]);
@@ -98,7 +128,7 @@ const HeroSlider: React.FC = () => {
     }
   };
 
-  const slide = SLIDES[currentSlide];
+  const slide = slides[currentSlide];
 
   return (
     <div 
@@ -171,7 +201,7 @@ const HeroSlider: React.FC = () => {
           <div className="flex-1 w-full max-w-lg xl:max-w-2xl relative flex flex-col items-center lg:items-end transition-opacity duration-500" key={`img-${currentSlide}`}>
             <div className="relative w-full aspect-[16/10] max-h-[380px] rounded-3xl overflow-hidden shadow-2xl border border-white/20 group">
               <img 
-                src={`${import.meta.env.BASE_URL}${slide.image}`} 
+                src={slide.image.startsWith('http') ? slide.image : `${import.meta.env.BASE_URL}${slide.image}`} 
                 alt={slide.title} 
                 className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
               />
@@ -194,7 +224,7 @@ const HeroSlider: React.FC = () => {
 
       {/* Navigation Dots */}
       <div className="absolute bottom-[3.5rem] left-1/2 -translate-x-1/2 flex space-x-3 z-20">
-        {SLIDES.map((_, idx) => (
+        {slides.map((_, idx) => (
           <button
             key={idx}
             onClick={() => setCurrentSlide(idx)}

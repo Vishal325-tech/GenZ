@@ -2,7 +2,7 @@
   "categories": [
     {
       "name": "Luxury Gift Hampers",
-      "image": "/images/cat_luxury.jpg",
+      "image": "/uploads/whatsapp-image-2026-06-23-at-7-00-40-pm.jpeg",
       "subCategories": [
         "Premium Hampers",
         "Gourmet Trays",
@@ -13,7 +13,7 @@
     },
     {
       "name": "Anniversary",
-      "image": "/images/cat_anniversary.jpg",
+      "image": "/uploads/1.jpeg",
       "subCategories": [
         "Silver Jubilee",
         "Golden Jubilee",
@@ -24,7 +24,7 @@
     },
     {
       "name": "Birthday",
-      "image": "/images/cat_birthday.jpg",
+      "image": "/uploads/whatsapp-image-2026-06-23-at-7-00-40-pm-1.jpeg",
       "subCategories": [
         "Kids",
         "Adults",
@@ -35,7 +35,7 @@
     },
     {
       "name": "Flowers",
-      "image": "/images/cat_flowers.jpg",
+      "image": "https://images.unsplash.com/photo-1562690868-60bbe7293e94?w=500",
       "subCategories": [
         "Roses",
         "Lilies",
@@ -47,7 +47,7 @@
     },
     {
       "name": "Chocolate Hampers",
-      "image": "/images/cat_chocolates.jpg",
+      "image": "/uploads/whatsapp-image-2026-06-23-at-7-00-41-pm.jpeg",
       "subCategories": [
         "Artisanal Dark",
         "Imported Selection",
@@ -58,7 +58,7 @@
     },
     {
       "name": "Teddy Bears",
-      "image": "/images/cat_teddies.jpg",
+      "image": "/uploads/whatsapp-image-2026-06-23-at-7-01-33-pm.jpeg",
       "subCategories": [
         "Giant Bears",
         "Plush Combos",
@@ -69,7 +69,7 @@
     },
     {
       "name": "Customized Gifts",
-      "image": "/images/cat_customized.jpg",
+      "image": "/uploads/whatsapp-image-2026-06-23-at-7-01-54-pm.jpeg",
       "subCategories": [
         "Photo Frames",
         "Engraved Items",
@@ -80,7 +80,7 @@
     },
     {
       "name": "Baby Gifts",
-      "image": "/images/cat_baby.jpg",
+      "image": "/uploads/whatsapp-image-2026-06-23-at-7-01-55-pm.jpeg",
       "subCategories": [
         "Baby Shower",
         "Newborn Essentials",
@@ -100,8 +100,8 @@
       "category": "Luxury Gift Hampers",
       "subCategory": "Premium Hampers",
       "images": [
-        "/images/hamper_crimson_1.jpg",
-        "/images/hamper_crimson_2.jpg"
+        "/uploads/whatsapp-image-2026-06-23-at-7-00-40-pm.jpeg",
+        "/uploads/whatsapp-image-2026-06-23-at-7-00-40-pm-1.jpeg"
       ],
       "videos": [],
       "tags": [
@@ -130,7 +130,8 @@
       "category": "Anniversary",
       "subCategory": "Golden Jubilee",
       "images": [
-        "/images/hamper_anniversary.jpg"
+        "/uploads/1.jpeg",
+        "/uploads/whatsapp-image-2026-06-23-at-7-00-40-pm-2.jpeg"
       ],
       "videos": [],
       "tags": [
@@ -158,7 +159,8 @@
       "category": "Teddy Bears",
       "subCategory": "Plush Combos",
       "images": [
-        "/images/teddy_flowers.jpg"
+        "/uploads/whatsapp-image-2026-06-23-at-7-01-33-pm.jpeg",
+        "/uploads/whatsapp-image-2026-06-23-at-7-01-33-pm-1.jpeg"
       ],
       "videos": [],
       "tags": [
@@ -179,7 +181,8 @@
       "category": "Chocolate Hampers",
       "subCategory": "Artisanal Dark",
       "images": [
-        "/images/choc_symphony.jpg"
+        "/uploads/whatsapp-image-2026-06-23-at-7-00-41-pm.jpeg",
+        "/uploads/whatsapp-image-2026-06-23-at-7-00-41-pm-1.jpeg"
       ],
       "videos": [],
       "tags": [
@@ -200,7 +203,7 @@
       "category": "Flowers",
       "subCategory": "Roses",
       "images": [
-        "/images/flowers_roses.jpg"
+        "https://images.unsplash.com/photo-1562690868-60bbe7293e94?w=500"
       ],
       "videos": [],
       "tags": [
@@ -221,7 +224,7 @@
       "category": "Flowers",
       "subCategory": "Vase Arrangements",
       "images": [
-        "/images/vase_flowers.jpg"
+        "/uploads/whatsapp-image-2026-06-23-at-7-01-54-pm.jpeg"
       ],
       "videos": [],
       "tags": [
@@ -242,7 +245,7 @@
       "category": "Customized Gifts",
       "subCategory": "Photo Frames",
       "images": [
-        "/images/photo_frame.jpg"
+        "/uploads/whatsapp-image-2026-06-23-at-7-01-54-pm.jpeg"
       ],
       "videos": [],
       "tags": [],
@@ -261,7 +264,7 @@
       "category": "Baby Gifts",
       "subCategory": "Newborn Essentials",
       "images": [
-        "/images/baby_hamper.jpg"
+        "/uploads/whatsapp-image-2026-06-23-at-7-01-55-pm.jpeg"
       ],
       "videos": [],
       "tags": [],
@@ -389,6 +392,20 @@
       "notifications": [],
       "createdAt": "2026-07-07T17:23:34.779Z",
       "updatedAt": "2026-07-07T17:23:34.781Z"
+    },
+    {
+      "_id": "user_admin",
+      "name": "Admin",
+      "email": "admin@royalhampers.com",
+      "password": "$2a$10$YwEogyf6zookDtL9hVUE9ewRom/PCy8K60VU8jDU155OqPD7iPlAm",
+      "role": "superadmin",
+      "accountStatus": "active",
+      "addressBook": [],
+      "wishlist": [],
+      "savedCards": [],
+      "notifications": [],
+      "createdAt": "2026-07-08T09:05:07.112Z",
+      "updatedAt": "2026-07-08T09:05:07.113Z"
     }
   ],
   "orders": [],
@@ -604,6 +621,76 @@
       "updatedAt": "2026-07-07T18:54:25.629Z",
       "expiresAt": "2026-07-08T17:09:00.000Z",
       "publishedAt": "2026-07-07T18:54:21.345Z"
+    },
+    {
+      "customerName": "Jhan",
+      "email": "vishal342@gmail.com",
+      "mobile": "+917996687969",
+      "city": "Belgaum",
+      "state": "Karnataka",
+      "country": "India",
+      "occasion": "Festival",
+      "customOccasion": "",
+      "title": "22nd Bday",
+      "caption": "Enjoy Every Moment",
+      "personalMessage": "Amazing day",
+      "giftMessage": "Thanks GenZ Team",
+      "hashtags": [
+        "#happybday"
+      ],
+      "celebrationDate": "2026-07-08T00:00:00.000Z",
+      "publishTime": "2026-07-08T14:40:00.000Z",
+      "storyDuration": "24h",
+      "customDurationHours": 24,
+      "visibility": "public",
+      "hideComments": false,
+      "allowSharing": true,
+      "backgroundMusic": "",
+      "customMusicUrl": "",
+      "brideName": "",
+      "groomName": "",
+      "socialMedia": {
+        "instagram": "@jhan_654",
+        "facebook": "",
+        "youtube": "",
+        "website": "",
+        "linkedin": ""
+      },
+      "showSocialMedia": true,
+      "photos": [
+        "https://res.cloudinary.com/jhu684wx/image/upload/v1783521538/genz_royal_hampers/stories/approved/q5xmgrobqzjsigmmj929.png"
+      ],
+      "videos": [
+        "https://res.cloudinary.com/jhu684wx/video/upload/v1783521552/genz_royal_hampers/stories/approved/neqjsh2uh1y45gr8uz8a.mp4",
+        "https://res.cloudinary.com/jhu684wx/video/upload/v1783521555/genz_royal_hampers/stories/approved/hkhqtiwvkmdnthcsdlfj.mp4"
+      ],
+      "coverPhoto": "",
+      "thumbnail": "",
+      "aiWishes": "🎉 Celebrating together! May this festival bring you prosperity, happiness, and countless blessings. Enjoy every moment! ✨",
+      "aiHashtags": [
+        "#FestivalCelebration",
+        "#Festivities",
+        "#CelebrateLife",
+        "#Joy",
+        "#GENZRoyalHampers"
+      ],
+      "aiGiftSuggestions": [
+        "Premium Gift Hamper",
+        "Luxury Celebration Box",
+        "Royal Festive Basket",
+        "Personalised Keepsake Gift",
+        "Grand Celebration Hamper"
+      ],
+      "expiresAt": "2026-07-09T14:40:00.000Z",
+      "status": "published",
+      "_id": "story_u2x2te5xt",
+      "reactions": [],
+      "comments": [],
+      "viewCount": 0,
+      "shareCount": 0,
+      "createdAt": "2026-07-08T14:39:16.397Z",
+      "updatedAt": "2026-07-08T14:39:51.640Z",
+      "publishedAt": "2026-07-08T14:39:51.638Z"
     }
   ]
 }

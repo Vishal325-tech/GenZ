@@ -2,42 +2,42 @@
   "categories": [
     {
       "name": "Luxury Gift Hampers",
-      "image": "/images/cat_luxury.jpg",
+      "image": "/uploads/whatsapp-image-2026-06-23-at-7-00-40-pm.jpeg",
       "subCategories": ["Premium Hampers", "Gourmet Trays", "Celebration Baskets"]
     },
     {
       "name": "Anniversary",
-      "image": "/images/cat_anniversary.jpg",
+      "image": "/uploads/1.jpeg",
       "subCategories": ["Silver Jubilee", "Golden Jubilee", "Milestones"]
     },
     {
       "name": "Birthday",
-      "image": "/images/cat_birthday.jpg",
+      "image": "/uploads/whatsapp-image-2026-06-23-at-7-00-40-pm-1.jpeg",
       "subCategories": ["Kids", "Adults", "Surprise Combos"]
     },
     {
       "name": "Flowers",
-      "image": "/images/cat_flowers.jpg",
+      "image": "https://images.unsplash.com/photo-1562690868-60bbe7293e94?w=500",
       "subCategories": ["Roses", "Lilies", "Orchids", "Vase Arrangements"]
     },
     {
       "name": "Chocolate Hampers",
-      "image": "/images/cat_chocolates.jpg",
+      "image": "/uploads/whatsapp-image-2026-06-23-at-7-00-41-pm.jpeg",
       "subCategories": ["Artisanal Dark", "Imported Selection", "Truffle Boxes"]
     },
     {
       "name": "Teddy Bears",
-      "image": "/images/cat_teddies.jpg",
+      "image": "/uploads/whatsapp-image-2026-06-23-at-7-01-33-pm.jpeg",
       "subCategories": ["Giant Bears", "Plush Combos", "Baby Friendly"]
     },
     {
       "name": "Customized Gifts",
-      "image": "/images/cat_customized.jpg",
+      "image": "/uploads/whatsapp-image-2026-06-23-at-7-01-54-pm.jpeg",
       "subCategories": ["Photo Frames", "Engraved Items", "Mugs & Pillow Combos"]
     },
     {
       "name": "Baby Gifts",
-      "image": "/images/cat_baby.jpg",
+      "image": "/uploads/whatsapp-image-2026-06-23-at-7-01-55-pm.jpeg",
       "subCategories": ["Baby Shower", "Newborn Essentials", "Toys"]
     }
   ],
@@ -51,8 +51,8 @@
       "category": "Luxury Gift Hampers",
       "subCategory": "Premium Hampers",
       "images": [
-        "/images/hamper_crimson_1.jpg",
-        "/images/hamper_crimson_2.jpg"
+        "/uploads/whatsapp-image-2026-06-23-at-7-00-40-pm.jpeg",
+        "/uploads/whatsapp-image-2026-06-23-at-7-00-40-pm-1.jpeg"
       ],
       "videos": [],
       "tags": ["featured", "best_seller"],
@@ -75,7 +75,8 @@
       "category": "Anniversary",
       "subCategory": "Golden Jubilee",
       "images": [
-        "/images/hamper_anniversary.jpg"
+        "/uploads/1.jpeg",
+        "/uploads/whatsapp-image-2026-06-23-at-7-00-40-pm-2.jpeg"
       ],
       "videos": [],
       "tags": ["trending"],
@@ -98,7 +99,8 @@
       "category": "Teddy Bears",
       "subCategory": "Plush Combos",
       "images": [
-        "/images/teddy_flowers.jpg"
+        "/uploads/whatsapp-image-2026-06-23-at-7-01-33-pm.jpeg",
+        "/uploads/whatsapp-image-2026-06-23-at-7-01-33-pm-1.jpeg"
       ],
       "videos": [],
       "tags": ["featured"],
@@ -114,7 +116,8 @@
       "category": "Chocolate Hampers",
       "subCategory": "Artisanal Dark",
       "images": [
-        "/images/choc_symphony.jpg"
+        "/uploads/whatsapp-image-2026-06-23-at-7-00-41-pm.jpeg",
+        "/uploads/whatsapp-image-2026-06-23-at-7-00-41-pm-1.jpeg"
       ],
       "videos": [],
       "tags": ["best_seller"],
@@ -130,7 +133,7 @@
       "category": "Flowers",
       "subCategory": "Roses",
       "images": [
-        "/images/flowers_roses.jpg"
+        "https://images.unsplash.com/photo-1562690868-60bbe7293e94?w=500"
       ],
       "videos": [],
       "tags": ["trending"],
@@ -146,7 +149,7 @@
       "category": "Flowers",
       "subCategory": "Vase Arrangements",
       "images": [
-        "/images/vase_flowers.jpg"
+        "/uploads/whatsapp-image-2026-06-23-at-7-01-54-pm.jpeg"
       ],
       "videos": [],
       "tags": ["featured"],
@@ -162,7 +165,7 @@
       "category": "Customized Gifts",
       "subCategory": "Photo Frames",
       "images": [
-        "/images/photo_frame.jpg"
+        "/uploads/whatsapp-image-2026-06-23-at-7-01-54-pm.jpeg"
       ],
       "videos": [],
       "tags": [],
@@ -178,7 +181,7 @@
       "category": "Baby Gifts",
       "subCategory": "Newborn Essentials",
       "images": [
-        "/images/baby_hamper.jpg"
+        "/uploads/whatsapp-image-2026-06-23-at-7-01-55-pm.jpeg"
       ],
       "videos": [],
       "tags": [],

@@ -346,7 +346,7 @@ const Home: React.FC = () => {
                     key={item._id}
                     className="group relative aspect-[9/16] max-w-[280px] mx-auto w-full rounded-2xl overflow-hidden shadow-lg border border-luxury-gold/10 hover:border-luxury-gold transition-all duration-300 bg-neutral-900"
                   >
-                    <video src={item.url} className="w-full h-full object-cover" autoPlay muted loop playsInline />
+                    <video src={getAssetUrl(item.url)} className="w-full h-full object-cover" autoPlay muted loop playsInline />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent flex flex-col justify-between p-4">
                       <div className="flex justify-between items-start">
                         <span className="bg-red-600/90 text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider flex items-center gap-1 shadow-md">
@@ -358,7 +358,7 @@ const Home: React.FC = () => {
                       <div className="space-y-2 text-white">
                         <h5 className="text-xs font-bold truncate">{item.name}</h5>
                         <button 
-                          onClick={() => setPreviewVideo(item.url)}
+                          onClick={() => setPreviewVideo(getAssetUrl(item.url))}
                           className="inline-flex items-center gap-1.5 text-[10px] uppercase font-bold text-luxury-gold hover:text-white transition-colors"
                         >
                           <span className="p-1.5 rounded-full bg-white/20 hover:bg-luxury-gold hover:text-luxury-black transition-all">
@@ -384,7 +384,7 @@ const Home: React.FC = () => {
                       className="group relative aspect-square rounded-xl overflow-hidden border border-luxury-gold/10 shadow-sm"
                     >
                       <img 
-                        src={item.url} 
+                        src={getAssetUrl(item.url)} 
                         alt={item.name} 
                         loading="lazy" 
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 

@@ -503,7 +503,7 @@ const ProductDetails: React.FC = () => {
               <div key={p._id} className="scale-95 hover:scale-100 transition-all duration-300">
                 {/* Embedded smaller product card representation */}
                 <div onClick={() => navigate(`/product/${p._id}`)} className="bg-white dark:bg-luxury-black-soft rounded-xl overflow-hidden border border-luxury-gold/10 shadow-sm cursor-pointer hover:border-luxury-gold/40">
-                  <img src={p.images[0]} alt={p.name} className="w-full h-36 object-cover" />
+                  <img src={getAssetUrl(p.images[0])} alt={p.name} className="w-full h-36 object-cover" />
                   <div className="p-3">
                     <h5 className="font-serif text-xs font-bold truncate text-luxury-black dark:text-white">{p.name}</h5>
                     <span className="text-xs font-bold text-luxury-red dark:text-luxury-gold mt-1 block">₹{p.price.toLocaleString()}</span>

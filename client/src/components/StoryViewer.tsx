@@ -5,6 +5,7 @@ import {
   Star, Clock, Eye, Send, Volume2, VolumeX, Pause, Play, ExternalLink
 } from 'lucide-react';
 import BrandLogo from './BrandLogo';
+import { getAssetUrl } from '../data/initialData';
 
 interface StoryData {
   _id: string;
@@ -85,6 +86,7 @@ const occasionEmoji: Record<string, string> = {
 };
 
 const StoryViewer: React.FC<StoryViewerProps> = ({ stories, initialIndex, onClose }) => {
+  const [localStories, setLocalStories] = useState<StoryData[]>(stories);
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -94,7 +96,7 @@ const StoryViewer: React.FC<StoryViewerProps> = ({ stories, initialIndex, onClos
   const [showComments, setShowComments] = useState(false);
   const [floatingHearts, setFloatingHearts] = useState<{ id: number; x: number; y: number; emoji: string }[]>([]);
   const [commentText, setCommentText] = useState('');
-  const [isMuted, setIsMuted] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const startTimeRef = useRef<number>(0);
   const pausedTimeRef = useRef<number>(0);
@@ -105,14 +107,14 @@ const StoryViewer: React.FC<StoryViewerProps> = ({ stories, initialIndex, onClos
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const story = stories[currentIndex];
+  const story = localStories[currentIndex];
   
   // Build slides array: cover + photos + videos
   const getSlides = useCallback(() => {
     const slides: { type: 'image' | 'video'; url: string }[] = [];
-    if (story.coverPhoto) slides.push({ type: 'image', url: story.coverPhoto });
-    story.photos?.forEach(p => slides.push({ type: 'image', url: p }));
-    story.videos?.forEach(v => slides.push({ type: 'video', url: v }));
+    if (story.coverPhoto) slides.push({ type: 'image', url: getAssetUrl(story.coverPhoto) });
+    story.photos?.forEach(p => slides.push({ type: 'image', url: getAssetUrl(p) }));
+    story.videos?.forEach(v => slides.push({ type: 'video', url: getAssetUrl(v) }));
     // If no media, create a text-only slide
     if (slides.length === 0) slides.push({ type: 'image', url: '' });
     return slides;
@@ -142,10 +144,11 @@ const StoryViewer: React.FC<StoryViewerProps> = ({ stories, initialIndex, onClos
 
   useEffect(() => {
     if (!videoRef.current) return;
+    videoRef.current.load(); // Force reload the video resource when src/slide changes in React
     if (isPaused) {
       videoRef.current.pause();
     } else {
-      videoRef.current.play().catch(() => {});
+      videoRef.current.play().catch((err) => console.log("Autoplay blocked:", err));
     }
   }, [isPaused, currentSlide, currentIndex]);
 
@@ -190,11 +193,8 @@ const StoryViewer: React.FC<StoryViewerProps> = ({ stories, initialIndex, onClos
     if (currentSlide < totalSlides - 1) {
       setCurrentSlide(prev => prev + 1);
       resetProgress();
-    } else if (currentIndex < stories.length - 1) {
-      setCurrentIndex(prev => prev + 1);
-      setCurrentSlide(0);
-      resetProgress();
     } else {
+      // User request: Don't automatically advance to the next person's story
       onClose();
     }
   };
@@ -203,7 +203,21 @@ const StoryViewer: React.FC<StoryViewerProps> = ({ stories, initialIndex, onClos
     if (currentSlide > 0) {
       setCurrentSlide(prev => prev - 1);
       resetProgress();
-    } else if (currentIndex > 0) {
+    }
+  };
+
+  const goNextStory = () => {
+    if (currentIndex < localStories.length - 1) {
+      setCurrentIndex(prev => prev + 1);
+      setCurrentSlide(0);
+      resetProgress();
+    } else {
+      onClose();
+    }
+  };
+
+  const goPrevStory = () => {
+    if (currentIndex > 0) {
       setCurrentIndex(prev => prev - 1);
       setCurrentSlide(0);
       resetProgress();
@@ -290,13 +304,13 @@ const StoryViewer: React.FC<StoryViewerProps> = ({ stories, initialIndex, onClos
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
-      if (e.key === 'ArrowRight') goNext();
-      if (e.key === 'ArrowLeft') goPrev();
+      if (e.key === 'ArrowRight') goNextStory();
+      if (e.key === 'ArrowLeft') goPrevStory();
       if (e.key === ' ') { e.preventDefault(); isPaused ? handleResume() : handlePause(); }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [currentIndex, currentSlide, isPaused]);
+  }, [currentIndex, currentSlide, isPaused, localStories]);
 
   // Floating heart
   const spawnHeart = (emoji: string, clientX?: number, clientY?: number) => {
@@ -309,15 +323,41 @@ const StoryViewer: React.FC<StoryViewerProps> = ({ stories, initialIndex, onClos
     }, 2000);
   };
 
-  const handleReaction = (emoji: string) => {
+  const handleReaction = async (emoji: string) => {
     spawnHeart(emoji);
     setShowReactions(false);
-    // POST reaction to API
-    fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/stories/${story._id}/react`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ emoji, label: '', userId: 'visitor' })
-    }).catch(() => {});
+
+    // Optimistic Update
+    setLocalStories(prev => {
+      const next = [...prev];
+      const current = next[currentIndex];
+      if (current) {
+        const reactions = current.reactions ? [...current.reactions] : [];
+        reactions.push({ emoji, label: '' });
+        next[currentIndex] = { ...current, reactions };
+      }
+      return next;
+    });
+
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/stories/${story._id}/react`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ emoji, label: '', userId: 'visitor' })
+      });
+      const data = await res.json();
+      if (res.ok && data.reactions) {
+        setLocalStories(prev => {
+          const next = [...prev];
+          if (next[currentIndex]) {
+            next[currentIndex] = { ...next[currentIndex], reactions: data.reactions };
+          }
+          return next;
+        });
+      }
+    } catch (err) {
+      console.error('Failed to submit reaction:', err);
+    }
   };
 
   const handleCopyLink = () => {
@@ -350,7 +390,7 @@ const StoryViewer: React.FC<StoryViewerProps> = ({ stories, initialIndex, onClos
         {/* Prev Story Arrow (Desktop) */}
         {currentIndex > 0 && (
           <button
-            onClick={goPrev}
+            onClick={goPrevStory}
             className="absolute left-4 top-1/2 -translate-y-1/2 z-50 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 items-center justify-center transition-all hidden md:flex"
           >
             <ChevronLeft className="w-5 h-5 text-white" />
@@ -358,9 +398,9 @@ const StoryViewer: React.FC<StoryViewerProps> = ({ stories, initialIndex, onClos
         )}
 
         {/* Next Story Arrow (Desktop) */}
-        {currentIndex < stories.length - 1 && (
+        {currentIndex < localStories.length - 1 && (
           <button
-            onClick={goNext}
+            onClick={goNextStory}
             className="absolute right-4 top-1/2 -translate-y-1/2 z-50 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 items-center justify-center transition-all hidden md:flex"
           >
             <ChevronRight className="w-5 h-5 text-white" />
@@ -504,7 +544,7 @@ const StoryViewer: React.FC<StoryViewerProps> = ({ stories, initialIndex, onClos
                 <div className="story-ring-inner" style={{ padding: '1px', background: 'transparent' }}>
                   <div className="w-9 h-9 rounded-full bg-gradient-to-br from-celebration-soft-pink to-celebration-rose-gold flex items-center justify-center overflow-hidden">
                     {story.thumbnail || story.coverPhoto ? (
-                      <img src={story.thumbnail || story.coverPhoto} alt="" className="w-full h-full object-cover" />
+                      <img src={getAssetUrl(story.thumbnail || story.coverPhoto)} alt="" className="w-full h-full object-cover" />
                     ) : (
                       <span className="text-sm">{occasionEmoji[story.occasion] || '🎉'}</span>
                     )}
@@ -700,15 +740,47 @@ const StoryViewer: React.FC<StoryViewerProps> = ({ stories, initialIndex, onClos
                       className="flex-1 bg-white/10 text-white text-xs rounded-full px-3 py-2 outline-none placeholder:text-white/30 border border-white/10 focus:border-luxury-gold/50"
                     />
                     <button
-                      onClick={() => {
+                      onClick={async () => {
                         if (!commentText.trim()) return;
-                        // POST comment
-                        fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/stories/${story._id}/comment`, {
-                          method: 'POST',
-                          headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({ userName: 'Visitor', text: commentText })
-                        }).catch(() => {});
+                        const newComment = commentText;
                         setCommentText('');
+
+                        // Optimistic Update
+                        setLocalStories(prev => {
+                          const next = [...prev];
+                          const current = next[currentIndex];
+                          if (current) {
+                            const comments = current.comments ? [...current.comments] : [];
+                            comments.push({
+                              _id: `comment_temp_${Date.now()}`,
+                              userName: 'Visitor',
+                              text: newComment,
+                              createdAt: new Date().toISOString()
+                            } as any);
+                            next[currentIndex] = { ...current, comments };
+                          }
+                          return next;
+                        });
+
+                        try {
+                          const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/stories/${story._id}/comment`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ userName: 'Visitor', text: newComment })
+                          });
+                          const data = await res.json();
+                          if (res.ok && data.comments) {
+                            setLocalStories(prev => {
+                              const next = [...prev];
+                              if (next[currentIndex]) {
+                                next[currentIndex] = { ...next[currentIndex], comments: data.comments };
+                              }
+                              return next;
+                            });
+                          }
+                        } catch (err) {
+                          console.error('Failed to submit comment:', err);
+                        }
                       }}
                       className="w-8 h-8 rounded-full bg-luxury-gold flex items-center justify-center hover:bg-celebration-rose-gold transition-colors"
                     >

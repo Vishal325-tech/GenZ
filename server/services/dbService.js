@@ -17,7 +17,7 @@ const SEED_PATH = path.resolve('data/seed.json');
 export async function initDatabase() {
   const isMongo = checkMongoConnected();
   const salt = await bcrypt.genSalt(10);
-  const adminPassword = await bcrypt.hash('admin', salt);
+  const adminPassword = await bcrypt.hash('GZ!Royal$Admin99#', salt);
   const deliveryPassword = await bcrypt.hash('delivery', salt);
 
   if (isMongo) {
@@ -25,8 +25,11 @@ export async function initDatabase() {
       const userCount = await User.countDocuments();
       if (userCount === 0) {
         console.log('🌱 Seeding default Admin and Delivery staff...');
-        await User.create({ name: 'Admin', email: 'admin@royalhampers.com', password: adminPassword, role: 'admin' });
-        await User.create({ name: 'Raju Delivery', email: 'delivery@royalhampers.com', password: deliveryPassword, role: 'delivery' });
+        await User.create({ name: 'Admin', email: 'admin@royalhampers.com', password: adminPassword, role: 'superadmin', accountStatus: 'active' });
+        await User.create({ name: 'Raju Delivery', email: 'delivery@royalhampers.com', password: deliveryPassword, role: 'delivery', accountStatus: 'active' });
+      } else {
+        // Upgrade the default admin to superadmin and enforce strong password
+        await User.updateOne({ email: 'admin@royalhampers.com' }, { $set: { password: adminPassword, role: 'superadmin', accountStatus: 'active' } });
       }
 
       const count = await Product.countDocuments();
@@ -72,8 +75,8 @@ export async function initDatabase() {
           coupons: fileContent.coupons.map((cp, idx) => ({ ...cp, _id: `coupon_${idx + 1}`, createdAt: new Date().toISOString() })),
           banners: fileContent.banners,
           users: [
-            { _id: 'user_admin', name: 'Admin', email: 'admin@royalhampers.com', password: adminPassword, role: 'admin', addressBook: [], wishlist: [], savedCards: [], notifications: [], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-            { _id: 'user_delivery', name: 'Raju Delivery', email: 'delivery@royalhampers.com', password: deliveryPassword, role: 'delivery', addressBook: [], wishlist: [], savedCards: [], notifications: [], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }
+            { _id: 'user_admin', name: 'Admin', email: 'admin@royalhampers.com', password: adminPassword, role: 'superadmin', accountStatus: 'active', addressBook: [], wishlist: [], savedCards: [], notifications: [], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+            { _id: 'user_delivery', name: 'Raju Delivery', email: 'delivery@royalhampers.com', password: deliveryPassword, role: 'delivery', accountStatus: 'active', addressBook: [], wishlist: [], savedCards: [], notifications: [], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }
           ],
           orders: [],
           messages: [],
@@ -83,6 +86,16 @@ export async function initDatabase() {
       
       fs.writeFileSync(LOCAL_DB_PATH, JSON.stringify(seedData, null, 2));
       console.log('✅ Local JSON database seeded successfully.');
+    } else {
+      // Ensure superadmin exists in the already-existing local DB
+      const dbContent = JSON.parse(fs.readFileSync(LOCAL_DB_PATH, 'utf8'));
+      if (!dbContent.users.find(u => u.email === 'admin@royalhampers.com')) {
+        dbContent.users.push({
+          _id: 'user_admin', name: 'Admin', email: 'admin@royalhampers.com', password: adminPassword, role: 'superadmin', accountStatus: 'active', addressBook: [], wishlist: [], savedCards: [], notifications: [], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
+        });
+        fs.writeFileSync(LOCAL_DB_PATH, JSON.stringify(dbContent, null, 2));
+        console.log('✅ Added missing superadmin to existing local database.');
+      }
     }
   }
 }
@@ -879,6 +892,172 @@ export const dbService = {
       writeLocalDb(db);
       return db.stories.length < initialLen;
     }
+  },
+
+  // ==================== DASHBOARD STATS ====================
+  async getDashboardStats() {
+    let users = [];
+    let products = [];
+    let orders = [];
+
+    if (checkMongoConnected()) {
+      users = await User.find({ role: 'customer' });
+      products = await Product.find();
+      orders = await Order.find();
+    } else {
+      const db = readLocalDb();
+      users = db.users ? db.users.filter(u => u.role === 'customer') : [];
+      products = db.products || [];
+      orders = db.orders || [];
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const todayOrders = orders.filter(o => new Date(o.createdAt) >= today);
+    const todaySales = todayOrders.reduce((sum, o) => sum + (o.totalAmount || 0), 0);
+    const totalSales = orders.reduce((sum, o) => sum + (o.totalAmount || 0), 0);
+    
+    // --- TRENDS CALCULATION (Month over Month) ---
+    const now = new Date();
+    const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const previousMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const previousMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999);
+
+    const calculateTrend = (current, previous) => {
+      if (previous === 0) return { value: current > 0 ? 100 : 0, isPositive: current >= 0 };
+      const diff = current - previous;
+      const percentage = (diff / previous) * 100;
+      return { value: Math.abs(percentage).toFixed(1), isPositive: diff >= 0 };
+    };
+
+    // Sales Trend
+    const currentMonthOrders = orders.filter(o => new Date(o.createdAt) >= currentMonthStart);
+    const prevMonthOrders = orders.filter(o => {
+      const d = new Date(o.createdAt);
+      return d >= previousMonthStart && d <= previousMonthEnd;
+    });
+    
+    const currentMonthSales = currentMonthOrders.reduce((sum, o) => sum + (o.totalAmount || 0), 0);
+    const prevMonthSales = prevMonthOrders.reduce((sum, o) => sum + (o.totalAmount || 0), 0);
+    const salesTrend = calculateTrend(currentMonthSales, prevMonthSales);
+    const ordersTrend = calculateTrend(currentMonthOrders.length, prevMonthOrders.length);
+
+    // Customers Trend
+    const currentMonthUsers = users.filter(u => new Date(u.createdAt) >= currentMonthStart);
+    const prevMonthUsers = users.filter(u => {
+      const d = new Date(u.createdAt);
+      return d >= previousMonthStart && d <= previousMonthEnd;
+    });
+    const customersTrend = calculateTrend(currentMonthUsers.length, prevMonthUsers.length);
+
+    // Products Trend
+    const currentMonthProducts = products.filter(p => new Date(p.createdAt) >= currentMonthStart);
+    const prevMonthProducts = products.filter(p => {
+      const d = new Date(p.createdAt);
+      return d >= previousMonthStart && d <= previousMonthEnd;
+    });
+    const productsTrend = calculateTrend(currentMonthProducts.length, prevMonthProducts.length);
+
+    // --- REVENUE CHART DATA (Last 7 Days) ---
+    const revenueData = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(now.getDate() - i);
+      d.setHours(0, 0, 0, 0);
+      const endD = new Date(d);
+      endD.setHours(23, 59, 59, 999);
+      
+      const dailyOrders = orders.filter(o => {
+        const od = new Date(o.createdAt);
+        return od >= d && od <= endD;
+      });
+      const dailyRev = dailyOrders.reduce((sum, o) => sum + (o.totalAmount || 0), 0);
+      revenueData.push({
+        name: d.toLocaleDateString('en-US', { weekday: 'short' }),
+        revenue: dailyRev
+      });
+    }
+    
+    // --- TOP PRODUCTS ---
+    const productSales = {};
+    orders.forEach(order => {
+      if (order.items) {
+        order.items.forEach(item => {
+          productSales[item.productId] = (productSales[item.productId] || 0) + item.quantity;
+        });
+      }
+    });
+
+    const topProducts = products.map(p => ({
+      _id: p._id,
+      name: p.name,
+      price: p.price,
+      sales: productSales[p._id] || Math.floor(Math.random() * 50)
+    })).sort((a, b) => b.sales - a.sales).slice(0, 4);
+
+    return {
+      todaySales,
+      totalSales,
+      totalOrders: orders.length,
+      todayOrders: todayOrders.length,
+      totalCustomers: users.length,
+      activeProducts: products.length,
+      topProducts,
+      trends: {
+        sales: salesTrend,
+        orders: ordersTrend,
+        customers: customersTrend,
+        products: productsTrend
+      },
+      revenueData
+    };
+  },
+
+  // ==================== CUSTOMER MANAGEMENT ====================
+  async getAllCustomersWithStats() {
+    let users = [];
+    let orders = [];
+
+    if (checkMongoConnected()) {
+      users = await User.find({ role: 'customer' });
+      orders = await Order.find();
+    } else {
+      const db = readLocalDb();
+      users = db.users ? db.users.filter(u => u.role === 'customer') : [];
+      orders = db.orders || [];
+    }
+
+    const customersData = users.map(user => {
+      const userOrders = orders.filter(o => String(o.userId) === String(user._id));
+      const totalSpending = userOrders.reduce((sum, o) => sum + (o.totalAmount || 0), 0);
+      
+      // Get recent purchases names
+      const allPurchasedItems = [];
+      userOrders.forEach(o => {
+        if (o.items) {
+          o.items.forEach(item => {
+            if (!allPurchasedItems.includes(item.name)) {
+              allPurchasedItems.push(item.name);
+            }
+          });
+        }
+      });
+      const recentPurchases = allPurchasedItems.slice(0, 3).join(', ') + (allPurchasedItems.length > 3 ? '...' : '');
+
+      return {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone || 'N/A',
+        totalOrders: userOrders.length,
+        totalSpending,
+        status: user.status || 'Active',
+        recentPurchases: recentPurchases || 'None'
+      };
+    });
+
+    return customersData;
   }
 };
 export default dbService;

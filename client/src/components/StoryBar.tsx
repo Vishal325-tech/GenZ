@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Plus, Clock, Star, Eye, Search, Heart, Gift, MessageSquare, Sparkles } from 'lucide-react';
+import { getAssetUrl } from '../data/initialData';
 
 // Types
 interface StoryData {
@@ -130,7 +131,8 @@ const StoryBar: React.FC<StoryBarProps> = ({ onViewStory, onCreateStory }) => {
   };
 
   const getDisplayImage = (story: StoryData) => {
-    return story.thumbnail || story.coverPhoto || story.photos?.[0] || '';
+    const rawUrl = story.thumbnail || story.coverPhoto || story.photos?.[0] || '';
+    return getAssetUrl(rawUrl);
   };
 
   const filteredStories = stories.filter(story => 
@@ -360,7 +362,10 @@ const StoryBar: React.FC<StoryBarProps> = ({ onViewStory, onCreateStory }) => {
                       {getDisplayImage(story) ? (
                         <img
                           src={getDisplayImage(story)}
-                          alt={story.customerName}
+                          alt=""
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=500';
+                          }}
                           className="w-full h-full object-cover"
                           loading="lazy"
                         />
