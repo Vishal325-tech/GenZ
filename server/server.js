@@ -74,9 +74,10 @@ async function startServer() {
   app.listen(PORT, () => {
     console.log(`🚀 Gajanana Server floating on port ${PORT}`);
     
-    // Story auto-publish & auto-expire scheduler (runs every 60s)
+    // Story auto-publish & auto-expire scheduler (runs immediately + every 60s)
+    runScheduler(); // Run immediately on boot to catch any pending stories
     setInterval(runScheduler, 60 * 1000);
-    console.log('📅 Story scheduler started (60s interval)');
+    console.log('📅 Story scheduler started (immediate + 60s interval)');
   });
 }
 

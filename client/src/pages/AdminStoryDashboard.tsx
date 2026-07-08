@@ -4,7 +4,7 @@ import {
   BarChart3, Eye, Clock, Archive, Star, TrendingUp, Users,
   Check, X, Trash2, Edit, Calendar, Search, Filter, ChevronDown,
   MessageSquare, Share2, Heart, AlertCircle, CheckCircle2,
-  ArrowLeft, ExternalLink, Sparkles, RefreshCw
+  ArrowLeft, ExternalLink, Sparkles, RefreshCw, LogIn
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -100,7 +100,7 @@ const AdminStoryDashboard: React.FC = () => {
   const [autoApprove, setAutoApprove] = useState(false);
 
   const navigate = useNavigate();
-  const { user, token } = useAuth();
+  const { user, token, loading: authLoading } = useAuth();
 
   const toggleAutoApprove = async () => {
     try {
@@ -125,16 +125,24 @@ const AdminStoryDashboard: React.FC = () => {
   };
 
   useEffect(() => {
-    if (!token) {
-      navigate('/login');
-      return;
-    }
+    // Wait for auth to finish loading before deciding
+    if (authLoading) return;
+
+    // If user is a customer, redirect to home
     if (user && user.role === 'customer') {
       navigate('/');
       return;
     }
+
+    // If no token at all, show a friendly auth-required message instead of hard redirect
+    if (!token) {
+      setAuthError('Authentication required. Please login with an admin account to access the Story Management Dashboard.');
+      setLoading(false);
+      return;
+    }
+
     fetchData();
-  }, [token, user, filterStatus]);
+  }, [token, user, filterStatus, authLoading]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -238,28 +246,44 @@ const AdminStoryDashboard: React.FC = () => {
   const formatDate = (d: string) => new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
   const formatDateTime = (d: string) => new Date(d).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
 
+  // ── Auth Required / Error Screen ──
   if (authError) {
+    const isAuthRequired = !token;
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex items-center justify-center p-6">
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex items-center justify-center p-4">
         <div className="max-w-md w-full bg-white rounded-2xl border border-red-100 p-6 text-center shadow-lg">
-          <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center text-red-500 mx-auto mb-4">
-            <AlertCircle className="w-6 h-6" />
+          <div className={`w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 ${isAuthRequired ? 'bg-amber-50 text-amber-500' : 'bg-red-50 text-red-500'}`}>
+            {isAuthRequired ? <LogIn className="w-6 h-6" /> : <AlertCircle className="w-6 h-6" />}
           </div>
-          <h2 className="text-lg font-serif font-bold text-gray-800 mb-2">Error Loading Dashboard</h2>
+          <h2 className="text-lg font-serif font-bold text-gray-800 mb-2">
+            {isAuthRequired ? 'Login Required' : 'Error Loading Dashboard'}
+          </h2>
           <p className="text-sm text-gray-500 mb-6 leading-relaxed">{authError}</p>
           <div className="flex flex-col gap-2">
-            <button
-              onClick={() => window.location.href = '/GenZ/'}
-              className="w-full btn-luxury rounded-xl py-2.5 text-xs font-semibold"
-            >
-              Go to Homepage
-            </button>
-            <button
-              onClick={fetchData}
-              className="w-full text-xs text-gray-400 hover:text-gray-600 font-semibold"
-            >
-              Retry Connection
-            </button>
+            {isAuthRequired ? (
+              <button
+                onClick={() => navigate('/login')}
+                className="w-full btn-luxury rounded-xl py-3 text-sm font-semibold flex items-center justify-center gap-2"
+              >
+                <LogIn className="w-4 h-4" />
+                Go to Login
+              </button>
+            ) : (
+              <>
+                <button
+                  onClick={fetchData}
+                  className="w-full btn-luxury rounded-xl py-2.5 text-xs font-semibold"
+                >
+                  Retry Connection
+                </button>
+                <button
+                  onClick={() => window.location.href = '/GenZ/'}
+                  className="w-full text-xs text-gray-400 hover:text-gray-600 font-semibold py-2"
+                >
+                  Go to Homepage
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -267,52 +291,52 @@ const AdminStoryDashboard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 p-4 sm:p-6">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 p-3 sm:p-4 md:p-6">
       {/* Notification Toast */}
       <AnimatePresence>
         {notification && (
           <motion.div
-            className={`fixed top-4 right-4 z-50 flex items-center gap-2 px-4 py-3 rounded-xl shadow-lg text-sm font-medium ${
+            className={`fixed top-4 right-4 left-4 sm:left-auto z-50 flex items-center gap-2 px-4 py-3 rounded-xl shadow-lg text-sm font-medium ${
               notification.type === 'success'
                 ? 'bg-green-500 text-white'
                 : 'bg-red-500 text-white'
             }`}
-            initial={{ opacity: 0, x: 100 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 100 }}
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
           >
-            {notification.type === 'success' ? <CheckCircle2 className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
-            {notification.message}
+            {notification.type === 'success' ? <CheckCircle2 className="w-4 h-4 flex-shrink-0" /> : <AlertCircle className="w-4 h-4 flex-shrink-0" />}
+            <span className="truncate">{notification.message}</span>
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* Header */}
-      <div className="max-w-7xl mx-auto mb-6">
-        <div className="flex items-center justify-between">
+      <div className="max-w-7xl mx-auto mb-4 sm:mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
-            <h1 className="text-2xl font-serif font-bold text-gray-800 flex items-center gap-2">
-              <Sparkles className="w-6 h-6 text-luxury-gold" />
+            <h1 className="text-xl sm:text-2xl font-serif font-bold text-gray-800 flex items-center gap-2">
+              <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-luxury-gold" />
               Story Management
             </h1>
-            <p className="text-sm text-gray-500 mt-1">Manage celebration stories, approvals, and analytics</p>
+            <p className="text-xs sm:text-sm text-gray-500 mt-1">Manage celebration stories, approvals, and analytics</p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <button
               onClick={toggleAutoApprove}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-semibold transition-all ${
+              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-xl border text-xs sm:text-sm font-semibold transition-all ${
                 autoApprove
                   ? 'bg-green-500 border-green-500 text-white shadow-[0_2px_10px_rgba(34,197,94,0.3)] hover:bg-green-600'
                   : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
               }`}
             >
               <div className={`w-2 h-2 rounded-full ${autoApprove ? 'bg-white animate-ping' : 'bg-gray-400'}`} />
-              Auto-Approval: {autoApprove ? 'ON' : 'OFF'}
+              <span className="hidden sm:inline">Auto-Approval:</span> {autoApprove ? 'ON' : 'OFF'}
             </button>
 
-            <button onClick={fetchData} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition-all">
+            <button onClick={fetchData} className="flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl bg-white border border-gray-200 text-xs sm:text-sm text-gray-600 hover:bg-gray-50 transition-all">
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-              Refresh
+              <span className="hidden sm:inline">Refresh</span>
             </button>
           </div>
         </div>
@@ -320,36 +344,36 @@ const AdminStoryDashboard: React.FC = () => {
 
       {/* Stats Cards */}
       {stats && (
-        <div className="max-w-7xl mx-auto mb-6">
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-            <StatCard icon={<BarChart3 className="w-5 h-5" />} label="Total" value={stats.total} color="text-gray-700" bg="bg-gray-50" />
-            <StatCard icon={<Eye className="w-5 h-5" />} label="Active" value={stats.active} color="text-green-600" bg="bg-green-50" />
-            <StatCard icon={<Clock className="w-5 h-5" />} label="Pending" value={stats.pending} color="text-yellow-600" bg="bg-yellow-50" />
-            <StatCard icon={<Calendar className="w-5 h-5" />} label="Scheduled" value={stats.scheduled} color="text-blue-600" bg="bg-blue-50" />
-            <StatCard icon={<Archive className="w-5 h-5" />} label="Archived" value={stats.archived} color="text-gray-500" bg="bg-gray-50" />
-            <StatCard icon={<Star className="w-5 h-5" />} label="Featured" value={stats.featured} color="text-purple-600" bg="bg-purple-50" />
+        <div className="max-w-7xl mx-auto mb-4 sm:mb-6">
+          <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3">
+            <StatCard icon={<BarChart3 className="w-4 h-4 sm:w-5 sm:h-5" />} label="Total" value={stats.total} color="text-gray-700" bg="bg-gray-50" />
+            <StatCard icon={<Eye className="w-4 h-4 sm:w-5 sm:h-5" />} label="Active" value={stats.active} color="text-green-600" bg="bg-green-50" />
+            <StatCard icon={<Clock className="w-4 h-4 sm:w-5 sm:h-5" />} label="Pending" value={stats.pending} color="text-yellow-600" bg="bg-yellow-50" />
+            <StatCard icon={<Calendar className="w-4 h-4 sm:w-5 sm:h-5" />} label="Scheduled" value={stats.scheduled} color="text-blue-600" bg="bg-blue-50" />
+            <StatCard icon={<Archive className="w-4 h-4 sm:w-5 sm:h-5" />} label="Archived" value={stats.archived} color="text-gray-500" bg="bg-gray-50" />
+            <StatCard icon={<Star className="w-4 h-4 sm:w-5 sm:h-5" />} label="Featured" value={stats.featured} color="text-purple-600" bg="bg-purple-50" />
           </div>
 
           {/* Top Stats Row */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 mt-2 sm:mt-3">
             {stats.topOccasion && (
-              <div className="bg-white rounded-xl p-4 border border-gray-100">
+              <div className="bg-white rounded-xl p-3 sm:p-4 border border-gray-100">
                 <span className="text-[10px] font-bold text-gray-400 uppercase">Top Occasion</span>
-                <p className="text-lg font-bold text-gray-800 mt-1">
+                <p className="text-base sm:text-lg font-bold text-gray-800 mt-1">
                   {occasionEmoji[stats.topOccasion._id] || '🎉'} {stats.topOccasion._id}
                 </p>
                 <span className="text-xs text-gray-400">{stats.topOccasion.count} stories</span>
               </div>
             )}
             {stats.mostViewed?.[0] && (
-              <div className="bg-white rounded-xl p-4 border border-gray-100">
+              <div className="bg-white rounded-xl p-3 sm:p-4 border border-gray-100">
                 <span className="text-[10px] font-bold text-gray-400 uppercase">Most Viewed</span>
                 <p className="text-sm font-bold text-gray-800 mt-1 truncate">{stats.mostViewed[0].title}</p>
                 <span className="text-xs text-gray-400 flex items-center gap-1"><Eye className="w-3 h-3" /> {stats.mostViewed[0].viewCount} views</span>
               </div>
             )}
             {stats.mostShared?.[0] && (
-              <div className="bg-white rounded-xl p-4 border border-gray-100">
+              <div className="bg-white rounded-xl p-3 sm:p-4 border border-gray-100">
                 <span className="text-[10px] font-bold text-gray-400 uppercase">Most Shared</span>
                 <p className="text-sm font-bold text-gray-800 mt-1 truncate">{stats.mostShared[0].title}</p>
                 <span className="text-xs text-gray-400 flex items-center gap-1"><Share2 className="w-3 h-3" /> {stats.mostShared[0].shareCount} shares</span>
@@ -360,19 +384,19 @@ const AdminStoryDashboard: React.FC = () => {
       )}
 
       {/* Filters */}
-      <div className="max-w-7xl mx-auto mb-4">
-        <div className="bg-white rounded-xl p-4 border border-gray-100 flex flex-col sm:flex-row gap-3">
-          <div className="flex-1 relative">
+      <div className="max-w-7xl mx-auto mb-3 sm:mb-4">
+        <div className="bg-white rounded-xl p-3 sm:p-4 border border-gray-100 flex flex-col gap-3">
+          <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               type="text"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder="Search by name, title, occasion, email..."
-              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-luxury-gold/50"
+              className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-luxury-gold/50"
             />
           </div>
-          <div className="flex gap-2 overflow-x-auto">
+          <div className="flex gap-1.5 sm:gap-2 overflow-x-auto pb-1 -mx-1 px-1" style={{ scrollbarWidth: 'none' }}>
             {['', 'pending', 'approved', 'published', 'featured', 'rejected', 'archived'].map(s => (
               <button
                 key={s}
@@ -390,143 +414,152 @@ const AdminStoryDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Stories Table */}
+      {/* Stories Content */}
       <div className="max-w-7xl mx-auto">
         <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
           {loading ? (
-            <div className="p-8 text-center text-gray-400">Loading stories...</div>
+            <div className="p-8 text-center text-gray-400">
+              <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-gray-300" />
+              Loading stories...
+            </div>
           ) : filteredStories.length === 0 ? (
             <div className="p-12 text-center">
               <div className="text-4xl mb-3">📭</div>
               <p className="text-gray-500">No stories found.</p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-gray-100 bg-gray-50/50">
-                    <th className="text-left p-3 font-semibold text-gray-500 text-xs">Story</th>
-                    <th className="text-left p-3 font-semibold text-gray-500 text-xs">Occasion</th>
-                    <th className="text-left p-3 font-semibold text-gray-500 text-xs">Customer</th>
-                    <th className="text-left p-3 font-semibold text-gray-500 text-xs">Date</th>
-                    <th className="text-left p-3 font-semibold text-gray-500 text-xs">Status</th>
-                    <th className="text-left p-3 font-semibold text-gray-500 text-xs">Engagement</th>
-                    <th className="text-right p-3 font-semibold text-gray-500 text-xs">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredStories.map(story => (
-                    <tr key={story._id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
-                      <td className="p-3">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-lg overflow-hidden bg-gradient-to-br from-celebration-soft-pink to-celebration-rose-gold flex-shrink-0">
-                            {(story.thumbnail || story.coverPhoto) ? (
-                              <img src={story.thumbnail || story.coverPhoto} alt="" className="w-full h-full object-cover" />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center text-lg">
-                                {occasionEmoji[story.occasion] || '🎉'}
-                              </div>
-                            )}
-                          </div>
-                          <div className="min-w-0">
-                            <p className="font-semibold text-gray-800 truncate max-w-[180px]">{story.title}</p>
-                            <p className="text-[10px] text-gray-400">Created {formatDate(story.createdAt)}</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="p-3">
-                        <span className="occasion-badge">{story.occasion}</span>
-                      </td>
-                      <td className="p-3">
-                        <p className="font-medium text-gray-700">{story.customerName}</p>
-                        <p className="text-[10px] text-gray-400">{story.email}</p>
-                      </td>
-                      <td className="p-3 text-xs text-gray-500">{formatDate(story.celebrationDate)}</td>
-                      <td className="p-3">
-                        <span className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold border capitalize ${STATUS_COLORS[story.status] || ''}`}>
-                          {story.status}
-                        </span>
-                        {story.isFeatured && (
-                          <Star className="w-3 h-3 text-yellow-500 fill-yellow-500 inline ml-1" />
-                        )}
-                      </td>
-                      <td className="p-3">
-                        <div className="flex items-center gap-2 text-[10px] text-gray-400">
-                          <span className="flex items-center gap-0.5"><Eye className="w-3 h-3" />{story.viewCount}</span>
-                          <span className="flex items-center gap-0.5"><Heart className="w-3 h-3" />{story.reactions?.length || 0}</span>
-                          <span className="flex items-center gap-0.5"><Share2 className="w-3 h-3" />{story.shareCount}</span>
-                        </div>
-                      </td>
-                      <td className="p-3">
-                        <div className="flex items-center justify-end gap-1">
-                          <button
-                            onClick={() => setSelectedStory(story)}
-                            className="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center hover:bg-blue-100 transition-colors"
-                            title="Preview"
-                          >
-                            <Eye className="w-3.5 h-3.5" />
-                          </button>
-                          {story.status === 'pending' && (
-                            <>
-                              <button
-                                onClick={() => updateStory(story._id, { status: 'approved' })}
-                                className="w-7 h-7 rounded-lg bg-green-50 text-green-600 flex items-center justify-center hover:bg-green-100 transition-colors"
-                                title="Approve"
-                                disabled={actionLoading === story._id}
-                              >
-                                <Check className="w-3.5 h-3.5" />
-                              </button>
-                              <button
-                                onClick={() => updateStory(story._id, { status: 'rejected' })}
-                                className="w-7 h-7 rounded-lg bg-red-50 text-red-600 flex items-center justify-center hover:bg-red-100 transition-colors"
-                                title="Reject"
-                                disabled={actionLoading === story._id}
-                              >
-                                <X className="w-3.5 h-3.5" />
-                              </button>
-                            </>
-                          )}
-                          {(story.status === 'approved' || story.status === 'published') && (
-                            <button
-                              onClick={() => updateStory(story._id, { isFeatured: !story.isFeatured })}
-                              className={`w-7 h-7 rounded-lg flex items-center justify-center transition-colors ${
-                                story.isFeatured ? 'bg-yellow-100 text-yellow-600' : 'bg-gray-50 text-gray-400 hover:bg-yellow-50'
-                              }`}
-                              title={story.isFeatured ? 'Unfeature' : 'Feature'}
-                            >
-                              <Star className="w-3.5 h-3.5" />
-                            </button>
-                          )}
-                          {story.status !== 'published' && story.status !== 'featured' && (
-                            <button
-                              onClick={() => updateStory(story._id, { status: 'published' })}
-                              className="w-7 h-7 rounded-lg bg-green-50 text-green-600 flex items-center justify-center hover:bg-green-100 transition-colors"
-                              title="Publish Now"
-                            >
-                              <ExternalLink className="w-3.5 h-3.5" />
-                            </button>
-                          )}
-                          <button
-                            onClick={() => updateStory(story._id, { status: 'archived' })}
-                            className="w-7 h-7 rounded-lg bg-gray-50 text-gray-400 flex items-center justify-center hover:bg-gray-100 transition-colors"
-                            title="Archive"
-                          >
-                            <Archive className="w-3.5 h-3.5" />
-                          </button>
-                          <button
-                            onClick={() => deleteStory(story._id)}
-                            className="w-7 h-7 rounded-lg bg-red-50 text-red-400 flex items-center justify-center hover:bg-red-100 transition-colors"
-                            title="Delete"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      </td>
+            <>
+              {/* ═══ DESKTOP TABLE (hidden on mobile) ═══ */}
+              <div className="hidden sm:block overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-gray-100 bg-gray-50/50">
+                      <th className="text-left p-3 font-semibold text-gray-500 text-xs">Story</th>
+                      <th className="text-left p-3 font-semibold text-gray-500 text-xs">Occasion</th>
+                      <th className="text-left p-3 font-semibold text-gray-500 text-xs">Customer</th>
+                      <th className="text-left p-3 font-semibold text-gray-500 text-xs">Date</th>
+                      <th className="text-left p-3 font-semibold text-gray-500 text-xs">Status</th>
+                      <th className="text-left p-3 font-semibold text-gray-500 text-xs">Engagement</th>
+                      <th className="text-right p-3 font-semibold text-gray-500 text-xs">Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {filteredStories.map(story => (
+                      <tr key={story._id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+                        <td className="p-3">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-lg overflow-hidden bg-gradient-to-br from-celebration-soft-pink to-celebration-rose-gold flex-shrink-0">
+                              {(story.thumbnail || story.coverPhoto) ? (
+                                <img src={story.thumbnail || story.coverPhoto} alt="" className="w-full h-full object-cover" />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center text-lg">
+                                  {occasionEmoji[story.occasion] || '🎉'}
+                                </div>
+                              )}
+                            </div>
+                            <div className="min-w-0">
+                              <p className="font-semibold text-gray-800 truncate max-w-[180px]">{story.title}</p>
+                              <p className="text-[10px] text-gray-400">Created {formatDate(story.createdAt)}</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="p-3">
+                          <span className="occasion-badge">{story.occasion}</span>
+                        </td>
+                        <td className="p-3">
+                          <p className="font-medium text-gray-700">{story.customerName}</p>
+                          <p className="text-[10px] text-gray-400">{story.email}</p>
+                        </td>
+                        <td className="p-3 text-xs text-gray-500">{formatDate(story.celebrationDate)}</td>
+                        <td className="p-3">
+                          <span className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold border capitalize ${STATUS_COLORS[story.status] || ''}`}>
+                            {story.status}
+                          </span>
+                          {story.isFeatured && (
+                            <Star className="w-3 h-3 text-yellow-500 fill-yellow-500 inline ml-1" />
+                          )}
+                        </td>
+                        <td className="p-3">
+                          <div className="flex items-center gap-2 text-[10px] text-gray-400">
+                            <span className="flex items-center gap-0.5"><Eye className="w-3 h-3" />{story.viewCount}</span>
+                            <span className="flex items-center gap-0.5"><Heart className="w-3 h-3" />{story.reactions?.length || 0}</span>
+                            <span className="flex items-center gap-0.5"><Share2 className="w-3 h-3" />{story.shareCount}</span>
+                          </div>
+                        </td>
+                        <td className="p-3">
+                          <StoryActions
+                            story={story}
+                            actionLoading={actionLoading}
+                            onPreview={() => setSelectedStory(story)}
+                            onUpdate={updateStory}
+                            onDelete={deleteStory}
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* ═══ MOBILE CARD LIST (hidden on desktop) ═══ */}
+              <div className="sm:hidden divide-y divide-gray-100">
+                {filteredStories.map(story => (
+                  <div key={story._id} className="p-3">
+                    {/* Card Header: image + title + status */}
+                    <div className="flex items-start gap-3 mb-3">
+                      <div
+                        className="w-14 h-14 rounded-xl overflow-hidden bg-gradient-to-br from-celebration-soft-pink to-celebration-rose-gold flex-shrink-0 cursor-pointer active:scale-95 transition-transform"
+                        onClick={() => setSelectedStory(story)}
+                      >
+                        {(story.thumbnail || story.coverPhoto) ? (
+                          <img src={story.thumbnail || story.coverPhoto} alt="" className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-2xl">
+                            {occasionEmoji[story.occasion] || '🎉'}
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="min-w-0">
+                            <p className="font-semibold text-gray-800 text-sm truncate">{story.title}</p>
+                            <p className="text-xs text-gray-500">{story.customerName}</p>
+                          </div>
+                          <span className={`flex-shrink-0 inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold border capitalize ${STATUS_COLORS[story.status] || ''}`}>
+                            {story.status}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-3 mt-1.5">
+                          <span className="occasion-badge text-[9px]">{story.occasion}</span>
+                          {story.isFeatured && (
+                            <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
+                          )}
+                          <span className="text-[10px] text-gray-400">{formatDate(story.celebrationDate)}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Engagement Row */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3 text-[11px] text-gray-400">
+                        <span className="flex items-center gap-1"><Eye className="w-3.5 h-3.5" />{story.viewCount}</span>
+                        <span className="flex items-center gap-1"><Heart className="w-3.5 h-3.5" />{story.reactions?.length || 0}</span>
+                        <span className="flex items-center gap-1"><Share2 className="w-3.5 h-3.5" />{story.shareCount}</span>
+                      </div>
+                      {/* Mobile Actions */}
+                      <StoryActions
+                        story={story}
+                        actionLoading={actionLoading}
+                        onPreview={() => setSelectedStory(story)}
+                        onUpdate={updateStory}
+                        onDelete={deleteStory}
+                        mobile
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
           )}
         </div>
       </div>
@@ -535,20 +568,26 @@ const AdminStoryDashboard: React.FC = () => {
       <AnimatePresence>
         {selectedStory && (
           <motion.div
-            className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center sm:p-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setSelectedStory(null)}
           >
             <motion.div
-              className="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-xl"
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white rounded-t-2xl sm:rounded-2xl w-full sm:max-w-lg max-h-[92vh] sm:max-h-[90vh] overflow-y-auto shadow-xl"
+              initial={{ y: '100%', opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: '100%', opacity: 0 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
               onClick={e => e.stopPropagation()}
             >
-              <div className="p-6">
+              {/* Mobile drag handle */}
+              <div className="sm:hidden flex justify-center pt-2 pb-1">
+                <div className="w-10 h-1 rounded-full bg-gray-300" />
+              </div>
+
+              <div className="p-4 sm:p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-lg font-serif font-bold text-gray-800">Story Preview</h2>
                   <button onClick={() => setSelectedStory(null)} className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
@@ -562,7 +601,7 @@ const AdminStoryDashboard: React.FC = () => {
                     <img
                       src={selectedStory.coverPhoto || selectedStory.thumbnail}
                       alt={selectedStory.title}
-                      className="w-full h-48 object-cover rounded-xl"
+                      className="w-full h-40 sm:h-48 object-cover rounded-xl"
                     />
                   )}
 
@@ -570,7 +609,7 @@ const AdminStoryDashboard: React.FC = () => {
                     <span className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold border capitalize ${STATUS_COLORS[selectedStory.status] || ''}`}>
                       {selectedStory.status}
                     </span>
-                    <h3 className="text-xl font-serif font-bold text-gray-800 mt-2">{selectedStory.title}</h3>
+                    <h3 className="text-lg sm:text-xl font-serif font-bold text-gray-800 mt-2">{selectedStory.title}</h3>
                     <p className="text-sm text-gray-500 mt-1">{selectedStory.caption}</p>
                   </div>
 
@@ -609,13 +648,13 @@ const AdminStoryDashboard: React.FC = () => {
                       <>
                         <button
                           onClick={() => updateStory(selectedStory._id, { status: 'approved' })}
-                          className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-green-500 text-white text-xs font-semibold hover:bg-green-600"
+                          className="flex items-center gap-1.5 px-4 py-2.5 rounded-lg bg-green-500 text-white text-xs font-semibold hover:bg-green-600 active:scale-95 transition-all"
                         >
                           <Check className="w-3.5 h-3.5" /> Approve
                         </button>
                         <button
                           onClick={() => updateStory(selectedStory._id, { status: 'rejected' })}
-                          className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-red-500 text-white text-xs font-semibold hover:bg-red-600"
+                          className="flex items-center gap-1.5 px-4 py-2.5 rounded-lg bg-red-500 text-white text-xs font-semibold hover:bg-red-600 active:scale-95 transition-all"
                         >
                           <X className="w-3.5 h-3.5" /> Reject
                         </button>
@@ -623,19 +662,19 @@ const AdminStoryDashboard: React.FC = () => {
                     )}
                     <button
                       onClick={() => updateStory(selectedStory._id, { status: 'published' })}
-                      className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-500 text-white text-xs font-semibold hover:bg-blue-600"
+                      className="flex items-center gap-1.5 px-4 py-2.5 rounded-lg bg-blue-500 text-white text-xs font-semibold hover:bg-blue-600 active:scale-95 transition-all"
                     >
                       <ExternalLink className="w-3.5 h-3.5" /> Publish Now
                     </button>
                     <button
                       onClick={() => updateStory(selectedStory._id, { isFeatured: !selectedStory.isFeatured })}
-                      className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-purple-500 text-white text-xs font-semibold hover:bg-purple-600"
+                      className="flex items-center gap-1.5 px-4 py-2.5 rounded-lg bg-purple-500 text-white text-xs font-semibold hover:bg-purple-600 active:scale-95 transition-all"
                     >
                       <Star className="w-3.5 h-3.5" /> {selectedStory.isFeatured ? 'Unfeature' : 'Feature'}
                     </button>
                     <button
                       onClick={() => deleteStory(selectedStory._id)}
-                      className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-red-100 text-red-600 text-xs font-semibold hover:bg-red-200"
+                      className="flex items-center gap-1.5 px-4 py-2.5 rounded-lg bg-red-100 text-red-600 text-xs font-semibold hover:bg-red-200 active:scale-95 transition-all"
                     >
                       <Trash2 className="w-3.5 h-3.5" /> Delete
                     </button>
@@ -650,19 +689,98 @@ const AdminStoryDashboard: React.FC = () => {
   );
 };
 
+// ── Story Action Buttons (shared between table and card layouts) ──
+const StoryActions: React.FC<{
+  story: StoryData;
+  actionLoading: string;
+  onPreview: () => void;
+  onUpdate: (id: string, updates: Partial<StoryData>) => void;
+  onDelete: (id: string) => void;
+  mobile?: boolean;
+}> = ({ story, actionLoading, onPreview, onUpdate, onDelete, mobile }) => {
+  const btnSize = mobile ? 'w-8 h-8' : 'w-7 h-7';
+  const iconSize = mobile ? 'w-4 h-4' : 'w-3.5 h-3.5';
+
+  return (
+    <div className="flex items-center justify-end gap-1">
+      <button
+        onClick={onPreview}
+        className={`${btnSize} rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center hover:bg-blue-100 active:scale-90 transition-all`}
+        title="Preview"
+      >
+        <Eye className={iconSize} />
+      </button>
+      {story.status === 'pending' && (
+        <>
+          <button
+            onClick={() => onUpdate(story._id, { status: 'approved' })}
+            className={`${btnSize} rounded-lg bg-green-50 text-green-600 flex items-center justify-center hover:bg-green-100 active:scale-90 transition-all`}
+            title="Approve"
+            disabled={actionLoading === story._id}
+          >
+            <Check className={iconSize} />
+          </button>
+          <button
+            onClick={() => onUpdate(story._id, { status: 'rejected' })}
+            className={`${btnSize} rounded-lg bg-red-50 text-red-600 flex items-center justify-center hover:bg-red-100 active:scale-90 transition-all`}
+            title="Reject"
+            disabled={actionLoading === story._id}
+          >
+            <X className={iconSize} />
+          </button>
+        </>
+      )}
+      {(story.status === 'approved' || story.status === 'published') && (
+        <button
+          onClick={() => onUpdate(story._id, { isFeatured: !story.isFeatured })}
+          className={`${btnSize} rounded-lg flex items-center justify-center active:scale-90 transition-all ${
+            story.isFeatured ? 'bg-yellow-100 text-yellow-600' : 'bg-gray-50 text-gray-400 hover:bg-yellow-50'
+          }`}
+          title={story.isFeatured ? 'Unfeature' : 'Feature'}
+        >
+          <Star className={iconSize} />
+        </button>
+      )}
+      {story.status !== 'published' && story.status !== 'featured' && (
+        <button
+          onClick={() => onUpdate(story._id, { status: 'published' })}
+          className={`${btnSize} rounded-lg bg-green-50 text-green-600 flex items-center justify-center hover:bg-green-100 active:scale-90 transition-all`}
+          title="Publish Now"
+        >
+          <ExternalLink className={iconSize} />
+        </button>
+      )}
+      <button
+        onClick={() => onUpdate(story._id, { status: 'archived' })}
+        className={`${btnSize} rounded-lg bg-gray-50 text-gray-400 flex items-center justify-center hover:bg-gray-100 active:scale-90 transition-all`}
+        title="Archive"
+      >
+        <Archive className={iconSize} />
+      </button>
+      <button
+        onClick={() => onDelete(story._id)}
+        className={`${btnSize} rounded-lg bg-red-50 text-red-400 flex items-center justify-center hover:bg-red-100 active:scale-90 transition-all`}
+        title="Delete"
+      >
+        <Trash2 className={iconSize} />
+      </button>
+    </div>
+  );
+};
+
 // ── Sub-components ──
 const StatCard: React.FC<{ icon: React.ReactNode; label: string; value: number; color: string; bg: string }> = ({ icon, label, value, color, bg }) => (
-  <div className={`${bg} rounded-xl p-4 border border-gray-100`}>
-    <div className={`${color} mb-2`}>{icon}</div>
-    <p className="text-2xl font-bold text-gray-800">{value}</p>
-    <span className="text-[10px] font-semibold text-gray-400 uppercase">{label}</span>
+  <div className={`${bg} rounded-xl p-3 sm:p-4 border border-gray-100`}>
+    <div className={`${color} mb-1.5 sm:mb-2`}>{icon}</div>
+    <p className="text-lg sm:text-2xl font-bold text-gray-800">{value}</p>
+    <span className="text-[9px] sm:text-[10px] font-semibold text-gray-400 uppercase">{label}</span>
   </div>
 );
 
 const DetailItem: React.FC<{ label: string; value: string }> = ({ label, value }) => (
   <div>
     <span className="text-[10px] font-bold text-gray-400 uppercase">{label}</span>
-    <p className="text-sm text-gray-700">{value}</p>
+    <p className="text-sm text-gray-700 break-all">{value}</p>
   </div>
 );
 

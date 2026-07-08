@@ -171,6 +171,15 @@ export const submitStory = async (req, res) => {
       data.publishTime = data.celebrationDate;
     }
 
+    // Explicitly compute expiresAt (don't rely solely on pre-save hook)
+    if (data.publishTime) {
+      const durationMap = { '24h': 24, '48h': 48, '3d': 72, '7d': 168 };
+      const hours = data.storyDuration === 'custom'
+        ? (data.customDurationHours || 24)
+        : (durationMap[data.storyDuration] || 24);
+      data.expiresAt = new Date(new Date(data.publishTime).getTime() + hours * 60 * 60 * 1000).toISOString();
+    }
+
     // Check auto-approve setting
     const settings = readSettings();
     const autoApprove = settings.autoApprove || false;
@@ -474,6 +483,18 @@ export const adminUpdateStory = async (req, res) => {
     // Auto-set timestamps based on status
     if (targetStatus === 'published' || targetStatus === 'featured') {
       updates.publishedAt = story.publishedAt || new Date().toISOString();
+
+      // Recompute expiresAt based on publishTime + duration
+      const publishTime = updates.publishTime || story.publishTime;
+      const duration = updates.storyDuration || story.storyDuration || '24h';
+      const customHours = updates.customDurationHours || story.customDurationHours;
+      if (publishTime) {
+        const durationMap = { '24h': 24, '48h': 48, '3d': 72, '7d': 168 };
+        const hours = duration === 'custom'
+          ? (customHours || 24)
+          : (durationMap[duration] || 24);
+        updates.expiresAt = new Date(new Date(publishTime).getTime() + hours * 60 * 60 * 1000).toISOString();
+      }
     }
     if (targetStatus === 'archived') {
       updates.archivedAt = new Date().toISOString();

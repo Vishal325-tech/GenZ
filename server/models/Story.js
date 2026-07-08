@@ -118,8 +118,9 @@ StorySchema.index({ expiresAt: 1 });
 StorySchema.pre('save', function (next) {
   this.updatedAt = new Date();
 
-  // Auto-compute expiresAt from publishTime + duration
-  if (this.publishTime && !this.expiresAt) {
+  // Always recompute expiresAt from publishTime + duration
+  // (removed the !this.expiresAt guard so updates to publishTime/duration take effect)
+  if (this.publishTime) {
     const durationMap = { '24h': 24, '48h': 48, '3d': 72, '7d': 168 };
     const hours = this.storyDuration === 'custom'
       ? (this.customDurationHours || 24)

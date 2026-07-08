@@ -355,8 +355,8 @@ const SubmitStory: React.FC = () => {
         coverPhoto: mediaUrls.coverPhoto || '',
         thumbnail: mediaUrls.thumbnail || '',
         hashtags: formData.hashtags.split(',').map(t => t.trim()).filter(Boolean),
-        celebrationDate: formData.celebrationDate || new Date().toISOString(),
-        publishTime: formData.publishTime || formData.celebrationDate || new Date().toISOString(),
+        celebrationDate: formData.celebrationDate ? new Date(formData.celebrationDate).toISOString() : new Date().toISOString(),
+        publishTime: formData.publishTime ? new Date(formData.publishTime).toISOString() : (formData.celebrationDate ? new Date(formData.celebrationDate).toISOString() : new Date().toISOString()),
       };
 
       const res = await fetch(`${API_BASE}/stories/submit`, {
