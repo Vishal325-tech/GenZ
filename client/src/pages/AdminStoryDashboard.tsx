@@ -7,7 +7,7 @@ import {
   ArrowLeft, ExternalLink, Sparkles, RefreshCw, LogIn
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAdminAuth } from '../context/AdminAuthContext';
 
 const getApiBase = () => {
   const url = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
@@ -100,7 +100,7 @@ const AdminStoryDashboard: React.FC = () => {
   const [autoApprove, setAutoApprove] = useState(false);
 
   const navigate = useNavigate();
-  const { user, token, loading: authLoading } = useAuth();
+  const { adminUser: user, adminToken: token, adminLoading: authLoading } = useAdminAuth();
 
   const toggleAutoApprove = async () => {
     try {
