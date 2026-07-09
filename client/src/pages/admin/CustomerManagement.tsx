@@ -14,7 +14,7 @@ const CustomerManagement: React.FC = () => {
   useEffect(() => {
     const fetchCustomers = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/admin/dashboard/customers', {
+        const res = await fetch('/api/admin/dashboard/customers', {
           headers: {
             Authorization: `Bearer ${adminToken}`
           }

@@ -7,7 +7,16 @@ import './index.css';
 const originalFetch = window.fetch;
 window.fetch = function (input, init) {
   let targetInput = input;
-  const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  let apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  
+  if (apiBase.endsWith('/api')) {
+    apiBase = apiBase.slice(0, -4);
+  } else if (apiBase.endsWith('/api/')) {
+    apiBase = apiBase.slice(0, -5);
+  }
+  if (apiBase.endsWith('/')) {
+    apiBase = apiBase.slice(0, -1);
+  }
   
   if (typeof input === 'string') {
     if (input.startsWith('/api/')) {
