@@ -128,14 +128,7 @@ const AdminStoryDashboard: React.FC = () => {
     // Wait for auth to finish loading before deciding
     if (authLoading) return;
 
-    // If user is a customer, redirect to home
-    if (user && user.role === 'customer') {
-      navigate('/');
-      return;
-    }
-
-    // If no token at all, show a friendly auth-required message instead of hard redirect
-    if (!token) {
+    if (!user || !token) {
       setAuthError('Authentication required. Please login with an admin account to access the Story Management Dashboard.');
       setLoading(false);
       return;
